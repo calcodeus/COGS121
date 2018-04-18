@@ -3,8 +3,15 @@
 
 ### Storyboard 1:
 
+This storyboard shows a scenario where Chris, a person
+who has never watched an anime, wants to start watching
+anime but doesn't know where to start. A friend suggests 
+him to use an app and he found an anime that was reccommended
+to him. He watches the anime, likes the show, and has now
+started his journey on exploring anime.
 
 ![Image of Storyboard 1](https://github.com/calcodeus/COGS121/blob/master/images/storyboard1.jpg)
+
 
 
 ### Storyboard 2:
@@ -16,6 +23,7 @@ recommendations, watch them and they become able to
 talk about some animes with their friends.
 
 ![Image of Storyboard 2](https://github.com/calcodeus/COGS121/blob/master/images/storyboard2.JPG)
+
 
 
 ### Prototype 1:
@@ -30,6 +38,7 @@ talk about some animes with their friends.
 ![8](https://github.com/calcodeus/COGS121/blob/master/images/p1_8.png)
 ![9](https://github.com/calcodeus/COGS121/blob/master/images/p1_9.png)
 ![10](https://github.com/calcodeus/COGS121/blob/master/images/p1_10.png)
+
 
 
 ### Prototype 2:
