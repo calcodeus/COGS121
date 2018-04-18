@@ -28,6 +28,13 @@ talk about some animes with their friends.
 
 ### Prototype 1:
 
+This prototype shows a web app in which users can sign 
+up and connect their accounts from Netflix, IMDB, Hulu,
+or Rotten Tomatoes. It uses the user's info from these
+accounts to come up with a recommendation list of anime.
+The user can enhance their recommendations by adding
+specific movies and shows that they like.
+
 ![1](https://github.com/calcodeus/COGS121/blob/master/images/p1_1.png)
 ![2](https://github.com/calcodeus/COGS121/blob/master/images/p1_2.png)
 ![3](https://github.com/calcodeus/COGS121/blob/master/images/p1_3.png)
