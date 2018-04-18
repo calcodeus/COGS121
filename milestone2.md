@@ -33,3 +33,12 @@ talk about some animes with their friends.
 
 
 ### Prototype 2:
+
+This prototype has only 3 screens. First the user is greeted with a title page with a short explanation of how the website will work.
+Then they move on to a page where they can type in as many movies and tv shows as they want to base their recommendations on.
+Finally is the results page where animes are recommended one at a time to the user. They can adjust keyword values at the bottom 
+in order to improve their search results.
+
+![P2-1](https://github.com/calcodeus/COGS121/blob/master/images/P2-1.jpg)
+![P2-2](https://github.com/calcodeus/COGS121/blob/master/images/P2-2.jpg)
+![P2-3](https://github.com/calcodeus/COGS121/blob/master/images/P2-3.jpg)
