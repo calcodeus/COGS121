@@ -15,6 +15,7 @@
 // and open the frontend webpage at http://localhost:3000/petsapp.html
 
 const express = require('express');
+const request = require('request');
 const app = express();
 
 // put all of your static files (e.g., HTML, CSS, JS, JPG) in the static_files/
@@ -35,6 +36,22 @@ app.use(express.static('static_files'));
 // that they become persistent, but this fake database will be reset when
 // this script restarts. however, as long as the script is running, this
 // database can be modified at will.
+
+
+const genres = {}; 
+const TMDB_API_Key = 'fc0cb79574fbab583015789c89ddd591';
+const genreQueryObject = { api_key :TMDB_API_Key, language:'en-US'};
+request({
+  url:'https://api.themoviedb.org/3/search/genre/movie/list?',
+  qs:genreQueryObject
+},
+(err, response, body) => 
+{ if (err) {console.log(err); return;}
+  Object.assign(genres, body.genres);
+  console.log(body);
+  console.log(genres);
+});
+
 const fakeDatabase = {
   '1': {title: 'Death Note', year: '2006', rating: "9.0", poster: "deathnote.jpg", description: "An intelligent high school student goes on a secret crusade to eliminate criminals from the world after discovering a notebook capable of killing anyone whose name is written into it."},
   '2': {title: 'Code Geass', year: '2006', rating: "8.7", poster: "codegeass.jpg", description: "The Empire of Britannia has invaded Japan using giant robot weapons called Knightmare Frames. Japan is now referred to as Area 11, and its people the 11's."},
@@ -54,6 +71,23 @@ const fakeDatabase = {
 app.get('/users', (req, res) => {
 });
 
+
+console.log("out here");
+//app.get('/find/:searchName', (req, res) =>
+{
+  //const query1 = req.params.searchName;
+  const url = 'https://api.themoviedb.org/3/search/multi?'
+  const query1 = "code ge";
+  const propertiesObject = { api_key :TMDB_API_Key, language:'en-US', query:query1, page:'1', include_adult:'false' };
+  request({
+    url:url,
+    qs:propertiesObject
+  },
+  (err, response, body) => 
+  { if (err) {console.log(err); return;}
+    console.log("Get response: " + body.page);//[1].name);
+  });
+}
 
 // GET profile data for a user
 //
