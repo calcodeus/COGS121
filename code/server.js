@@ -1,3 +1,4 @@
+
 // Node.js + Express server backend for petsapp
 //
 // COGS121 by Philip Guo
@@ -38,18 +39,16 @@ app.use(express.static('static_files'));
 // database can be modified at will.
 
 
-const genres = {}; 
+const genres = {};
 const TMDB_API_Key = 'fc0cb79574fbab583015789c89ddd591';
 const genreQueryObject = { api_key :TMDB_API_Key, language:'en-US'};
 request({
-  url:'https://api.themoviedb.org/3/search/genre/movie/list?',
+  url:'https://api.themoviedb.org/3/genre/movie/list?',
   qs:genreQueryObject
 },
-(err, response, body) => 
+(err, response, body) =>
 { if (err) {console.log(err); return;}
-  Object.assign(genres, body.genres);
-  console.log(body);
-  console.log(genres);
+  Object.assign(genres, JSON.parse(body).genres);
 });
 
 const fakeDatabase = {
@@ -73,21 +72,22 @@ app.get('/users', (req, res) => {
 
 
 console.log("out here");
-//app.get('/find/:searchName', (req, res) =>
+app.get('/find/:searchName', (req, res) =>
 {
-  //const query1 = req.params.searchName;
+  const query1 = req.params.searchName;
   const url = 'https://api.themoviedb.org/3/search/multi?'
-  const query1 = "code ge";
   const propertiesObject = { api_key :TMDB_API_Key, language:'en-US', query:query1, page:'1', include_adult:'false' };
   request({
     url:url,
     qs:propertiesObject
   },
-  (err, response, body) => 
-  { if (err) {console.log(err); return;}
-    console.log("Get response: " + body.page);//[1].name);
+  (err, response, body) =>
+  {
+    if (err) {console.log(err); return;}
+    console.log (query1 + " -> " + JSON.parse.results);
+    res.send(JSON.parse(body).results);
   });
-}
+});
 
 // GET profile data for a user
 //
