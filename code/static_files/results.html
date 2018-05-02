@@ -12,124 +12,158 @@ http://localhost:3000/petsapp.html
 -->
 
 <html>
+
 <head>
-<title>Anime Noobs</title>
+  <title>Anime Noobs</title>
+  <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
 
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
-<script src="jquery-3.3.1.min.js"></script>
 
-<script type="text/javascript">
 
-function LoadRec(recNumber) {
-  const requestURL = 'recommendations/' + recNumber;
-  console.log('making ajax request to:', requestURL);
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
+  <script src="jquery-3.3.1.min.js"></script>
 
-  // From: http://learn.jquery.com/ajax/jquery-ajax-methods/
-  // Using the core $.ajax() method since it's the most flexible.
-  // ($.get() and $.getJSON() are nicer convenience functions)
-  $.ajax({
-    // all URLs are relative to http://localhost:3000/
-    url: requestURL,
-    type: 'GET',
-    dataType : 'json', // this URL returns data in JSON format
-    success: (data) => {
-      console.log('You received some data!', data);
-      $('#movieTitle').html(data.title + " (" + data.year + ")");
-      $('#poster').html('<img class="poster" src=' + data.poster + ' alt="">');
-      $('#description').html("Description: " + data.description);
-      $('#rating').html(data.rating);
-    },
-  });
-}
+  <link rel="stylesheet" href="css/bootstrap-grid.min.css">
+  <link rel="stylesheet" href="css/bootstrap-reboot.min.css">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
 
-// jQuery convention for running when the document has been fully loaded:
-$(document).ready(() => {
-  LoadRec(1);
-  $('#next').click(() => {
-    LoadRec(2);
-  });
-  $('#previous').click(() => {
-    LoadRec(1);
-  });
 
-  // define a generic Ajax error handler:
-  // http://api.jquery.com/ajaxerror/
-  $(document).ajaxError(() => {
-    $('#status').html('Error: unknown ajaxError!');
-  });
-});
-</script>
-<style>
+  <script src="bootstrap.min.js"></script>
+  <script src="jquery-3.3.1.min.js"></script>
 
-#page {
-margin-left: 20%;
-margin-right: 20%;
+  <script type="text/javascript">
+    function LoadRec(recNumber) {
+      const requestURL = 'recommendations/' + recNumber;
+      console.log('making ajax request to:', requestURL);
 
-}
+      // From: http://learn.jquery.com/ajax/jquery-ajax-methods/
+      // Using the core $.ajax() method since it's the most flexible.
+      // ($.get() and $.getJSON() are nicer convenience functions)
+      $.ajax({
+        // all URLs are relative to http://localhost:3000/
+        url: requestURL,
+        type: 'GET',
+        dataType: 'json', // this URL returns data in JSON format
+        success: (data) => {
+          console.log('You received some data!', data);
+          $('#movieTitle').html(data.title + " (" + data.year + ")");
+          $('#poster').html('<img class="poster" src=' + data.poster + ' alt="">');
+          $('#description').html("Description: " + data.description);
+          $('#rating').html(data.rating);
+        },
+      });
+    }
 
-.slider {
-    -webkit-appearance: none;
-    width: 20%;
-    height: 15px;
-    border-radius: 5px;   
-    background: #d3d3d3;
-    outline: none;
-    opacity: 0.7;
-    -webkit-transition: .2s;
-    transition: opacity .2s;
-}
+    // jQuery convention for running when the document has been fully loaded:
+    $(document).ready(() => {
+      LoadRec(1);
+      $('#next').click(() => {
+        LoadRec(2);
+      });
+      $('#previous').click(() => {
+        LoadRec(1);
+      });
 
-.slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 25px;
-    height: 25px;
-    border-radius: 50%; 
-    background: #4CAF50;
-    cursor: pointer;
-}
+      // define a generic Ajax error handler:
+      // http://api.jquery.com/ajaxerror/
+      $(document).ajaxError(() => {
+        $('#status').html('Error: unknown ajaxError!');
+      });
+    });
+  </script>
+  <style>
+    #page {
+      margin-left: 20%;
+      margin-right: 20%;
 
-.slider::-moz-range-thumb {
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
-    background: #4CAF50;
-    cursor: pointer;
-}
-.poster {
-    height: 300px;
-}
+    }
 
-#ratingContainer { 
-  margin-left: 40px;
-  margin-right: 40px;
-}
+    .slider {
+      -webkit-appearance: none;
+      width: 20%;
+      height: 15px;
+      border-radius: 5px;
+      background: #d3d3d3;
+      outline: none;
+      opacity: 0.7;
+      -webkit-transition: .2s;
+      transition: opacity .2s;
+    }
 
-</style>
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      background: #4CAF50;
+      cursor: pointer;
+    }
+
+    .slider::-moz-range-thumb {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      background: #4CAF50;
+      cursor: pointer;
+    }
+
+    .poster {
+      height: 300px;
+    }
+
+    #ratingContainer {
+      margin-left: 40px;
+      margin-right: 40px;
+    }
+  </style>
 </head>
-<body>
-<a href="homepage.html">Home</a>
- <div id="page">
- <h1>Recommendations</h1>
- <hr>
-  <div><h2 id="movieTitle"></h2></div>
-  <div id="poster"></div>
-  <div id="description"></div>
-  <center>
-  <div id="arrowButtons"> 
-    <button id=previous><i class="fas fa-arrow-left"></i></button>
-    <span id=ratingContainer> 
-      <i class="fas fa-star"></i> <span id=rating> </span>/10
-    </span>
-    <button id=next><i class="fas fa-arrow-right"></i></button>
-  </div>
-  </center>
-  <hr/>
 
-  <div class="slidecontainer">
-    Action <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
-    <button id="delete"><i class="fas fa-times"></i></button>
-  </div> 
-</div>
+<body class="container">
+  <center style="padding-top: 3vh;">
+    <a href="homepage.html">
+      <button><i class="fas fa-home"></i></button>
+    </a>
+    <a href="favorites.html">
+      <button><i class="fas fa-star"></i></button>
+    </a>
+  </center>
+
+  <div id="page" style="padding-top: 3vh;">
+    <center>
+      <h1>Recommendations</h1>
+    </center>
+    <hr>
+
+    <center style="padding-top: 2vh;padding-bottom: 2vh;">
+      <h2 id="movieTitle"></h2>
+    </center>
+
+    <div class="row">
+      <div class="col-md-6">
+        <div id="poster"></div>
+      </div>
+      <div class="col-md-6">
+        <div id="description"></div>
+      </div>
+    </div>
+    <center style="padding-top: 2vh; padding-bottom: 3vh;">
+      <div id="arrowButtons">
+        <button id=previous><i class="fas fa-arrow-left"></i></button>
+        <span id=ratingContainer>
+      <i class="fas fa-star"></i> <span id=rating> </span>/10
+        </span>
+        <button id=next><i class="fas fa-arrow-right"></i></button>
+      </div>
+    </center>
+    <hr/>
+
+    <center>
+      <div class="slidecontainer">
+        Action <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+        <button id="delete"><i class="fas fa-times"></i></button>
+      </div>
+    </center>
+  </div>
 </body>
+
 </html>

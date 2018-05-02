@@ -1,43 +1,47 @@
 <html>
+
 <head>
-<title>Anime Noobs</title>
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
+  <title>Anime Noobs</title>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
+  <link rel="stylesheet" href="css/bootstrap-grid.min.css">
+  <link rel="stylesheet" href="css/bootstrap-reboot.octicon-mention.css">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
 
 
-<script src="jquery-3.3.1.min.js"></script>
-<script type="text/javascript">
+  <script src="bootstrap.min.js"></script>
+  <script src="jquery-3.3.1.min.js"></script>
+  <script type="text/javascript">
+    // jQuery convention for running when the document has been fully loaded:
+    $(document).ready(() => {
+      $('#searchButton').click(() => {});
+      $('#next').click(() => {
+        window.location = "results.html"
+      });
 
-// jQuery convention for running when the document has been fully loaded:
-$(document).ready(() => {
-  $('#searchButton').click(() => {
-  });
-  $('#next').click(() => {
-    window.location = "results.html"
-  });
-
-  // define a generic Ajax error handler:
-  // http://api.jquery.com/ajaxerror/
-  $(document).ajaxError(() => {
-    $('#status').html('Error: unknown ajaxError!');
-  });
-});
-</script>
+      // define a generic Ajax error handler:
+      // http://api.jquery.com/ajaxerror/
+      $(document).ajaxError(() => {
+        $('#status').html('Error: unknown ajaxError!');
+      });
+    });
+  </script>
 </head>
 
 <body>
   <h1>Enter your favorite movies and show</h1>
 
-  <input id="nameBox" type="text" size="20"/>
+  <input id="nameBox" type="text" size="20" />
   <button id="searchButton"><i class="fas fa-plus"></i></button>
-  <button id="next">next</i></button>
+  <button id="next">next</button>
   <div id="favDiv"></div>
   <img id="petImage"></img>
   <div id="box">
-  <div id="text"></div>
+    <div id="text"></div>
   </div>
 
   <hr/>
 
   <div id="status"></div>
 </body>
+
 </html>
