@@ -50,6 +50,15 @@ request({
 { if (err) {console.log(err); return;}
   Object.assign(genres, JSON.parse(body).genres);
 });
+request({
+  url:'https://api.themoviedb.org/3/genre/tv/list?',
+  qs:genreQueryObject
+},
+(err, response, body) =>
+{ if (err) {console.log(err); return;}
+  Object.assign(genres, JSON.parse(body).genres);
+});
+
 
 const fakeDatabase = {
   '1': {title: 'Death Note', year: '2006', rating: "9.0", poster: "deathnote.jpg", description: "An intelligent high school student goes on a secret crusade to eliminate criminals from the world after discovering a notebook capable of killing anyone whose name is written into it."},
@@ -84,7 +93,30 @@ app.get('/find/:searchName', (req, res) =>
   (err, response, body) =>
   {
     if (err) {console.log(err); return;}
-    console.log (query1 + " -> " + JSON.parse.results);
+    res.send(JSON.parse(body).results);
+  });
+});
+
+app.get('/recommend', (req, res) =>
+{
+  const url = 'https://api.themoviedb.org/3/discover/movie?'
+  const genres = '18'
+  const animeKeyword = '210024, '
+  const keywords = animeKeyword + '10046'
+  const propertiesObject = {
+    api_key:TMDB_API_Key, language:'en-US',
+    with_genres: genres,
+    with_keywords: keywords
+  };
+  request({
+    url:url,
+    qs:propertiesObject
+  },
+  (err, response, body) =>
+  {
+    if (err) {console.log(err); return;}
+    console.log(response.statusCode);
+    console.log("recs: " + JSON.parse(body).results);
     res.send(JSON.parse(body).results);
   });
 });

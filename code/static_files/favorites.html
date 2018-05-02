@@ -6,9 +6,8 @@
   <link rel="stylesheet" href="css/bootstrap-grid.min.css">
   <link rel="stylesheet" href="css/bootstrap.min.css">
 
-
-  <script src="js/bootstrap.min.js"></script>
   <script src="jquery-3.3.1.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
   <script type="text/javascript">
     // jQuery convention for running when the document has been fully loaded:
     $(document).ready(() => {
@@ -22,16 +21,16 @@
                 type: 'GET',
                 dataType : 'json', // this URL returns data in JSON format
                 success: (data) => {
-                  console.log("response received: " + data);
+                  console.log("response received.");
                   if (data[0]) {
                     let resList = Object.keys(data).map((k) => { return data[k] });
-                    console.log(resList);
                     resList.sort((a, b)=>{
                       return b.popularity - a.popularity;
                     });
                     let resultDiv = document.getElementById('favDiv');
                     resultDiv.insertAdjacentHTML('beforeend', resList[0].title + '<br>');
-                    console.log(resList);
+                    console.log(resList[0].genre_ids);
+
 
                   } else {
                     console.log("no results found");

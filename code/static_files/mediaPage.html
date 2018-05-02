@@ -30,8 +30,8 @@ http://localhost:3000/petsapp.html
   <script src="js/bootstrap.min.js"></script>
 
   <script type="text/javascript">
-    function LoadRecs() {
-      const requestURL = 'recommend/';
+    function LoadRec(recNumber) {
+      const requestURL = 'recommendations/' + recNumber;
       console.log('making ajax request to:', requestURL);
 
       // From: http://learn.jquery.com/ajax/jquery-ajax-methods/
@@ -43,36 +43,23 @@ http://localhost:3000/petsapp.html
         type: 'GET',
         dataType: 'json', // this URL returns data in JSON format
         success: (data) => {
-          console.log(data);
-
-          let resultsField = '';
-          data.forEach((d) => {
-            const name = d.title;
-            console.log(name);
-            const poster = d.poster_path
-            console.log(poster);
-
-            const pre = '<img class="poster" src=http://image.tmdb.org/t/p/w185/';
-            const mid = ' alt=""><a href="mediaPage.html">'
-            const post = '</a><br>'
-            resultsField += pre+poster+mid+name+post;
-
-          });
-          console.log(resultsField);
-
-          $('#results').html( resultsField);
+          console.log('You received some data!', data);
+          $('#movieTitle').html(data.title + " (" + data.year + ")");
+          $('#poster').html('<img class="poster" src=' + data.poster + ' alt="">');
+          $('#description').html("Description: " + data.description);
+          $('#rating').html(data.rating);
         },
       });
     }
 
     // jQuery convention for running when the document has been fully loaded:
     $(document).ready(() => {
-      LoadRecs();
+      LoadRec(1);
       $('#next').click(() => {
-        LoadRecs();
+        LoadRec(2);
       });
       $('#previous').click(() => {
-        LoadRecs();
+        LoadRec(1);
       });
 
       // define a generic Ajax error handler:
@@ -84,8 +71,9 @@ http://localhost:3000/petsapp.html
   </script>
   <style>
     #page {
-      max-margin-left: 20%;
-      max-margin-right: 20%;
+      margin-left: 20%;
+      margin-right: 20%;
+
     }
 
     .slider {
@@ -119,7 +107,7 @@ http://localhost:3000/petsapp.html
     }
 
     .poster {
-      height: 20vh;
+      height: 300px;
     }
 
     #ratingContainer {
@@ -145,11 +133,28 @@ http://localhost:3000/petsapp.html
     </center>
     <hr>
 
-    <div id="results">
-      <img class="poster" src=http://image.tmdb.org/t/p/w185//y6Xmo3zHz2zFcqEp1McodElFzUV.jpg alt="">
-      <a href="mediaPage.html">movie title here</a>
-    </div>
+    <center style="padding-top: 2vh;padding-bottom: 2vh;">
+      <h2 id="movieTitle"></h2>
+    </center>
 
+    <div class="row">
+      <div class="col-md-6">
+        <div id="poster"></div>
+      </div>
+      <div class="col-md-6">
+        <div id="description"></div>
+      </div>
+    </div>
+    <center style="padding-top: 2vh; padding-bottom: 3vh;">
+      <div id="arrowButtons">
+        <button id=previous><i class="fas fa-arrow-left"></i></button>
+        <span id=ratingContainer>
+      <i class="fas fa-star"></i> <span id=rating> </span>/10
+        </span>
+        <button id=next><i class="fas fa-arrow-right"></i></button>
+      </div>
+    </center>
+    <hr/>
 
     <center>
       <div class="slidecontainer">
