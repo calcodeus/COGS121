@@ -1,35 +1,38 @@
 <html>
+
 <head>
-<title>Anime Noobs</title>
+  <title>Anime Noobs</title>
 
-<script src="jquery-3.3.1.min.js"></script>
+  <script src="jquery-3.3.1.min.js"></script>
 
-<script type="text/javascript">
+  <script type="text/javascript">
+    // jQuery convention for running when the document has been fully loaded:
+    $(document).ready(() => {
+      $('#readButton').click(() => {
+        window.location = "favorites.html"
+      });
 
-// jQuery convention for running when the document has been fully loaded:
-$(document).ready(() => {
-  $('#readButton').click(() => {
-    window.location = "favorites.html"
-  });
-
-  // define a generic Ajax error handler:
-  // http://api.jquery.com/ajaxerror/
-  $(document).ajaxError(() => {
-    $('#status').html('Error: unknown ajaxError!');
-  });
-});
-</script>
-<style>
-#banner{
-    width: 100vw;
-}
-</style>
+      // define a generic Ajax error handler:
+      // http://api.jquery.com/ajaxerror/
+      $(document).ajaxError(() => {
+        $('#status').html('Error: unknown ajaxError!');
+      });
+    });
+  </script>
+  <style>
+    #banner {
+      width: 100vw;
+    }
+  </style>
 </head>
+
 <body>
-  <center><h1>Anime Noobs</h1></center>
+  <center>
+    <h1>Anime Noobs</h1></center>
   <div>
-  <img id="banner" src="homepage.jpg" alt="">
-  </div> 
+    <img id="banner" src="homepage.jpg" alt="">
+  </div>
   <center><button id="readButton">Get Started</button></center>
 </body>
+
 </html>
