@@ -2,8 +2,8 @@ const express = require('express');
 const request = require('request');
 const app = express();
 
-app.use(express.static('static_files'));
 
+app.use(express.static('static_files'));
 
 //dictionary to convert from id to genre name
 const genres = {};
@@ -86,7 +86,7 @@ app.get('/keywords/:type/:id', (req, res) => {
         results.forEach((kw) => {
           keywords[kw.id] = kw.name
         });
-        titles[id].genre_ids = results.map((kw) => kw.id);
+        titles[id].keyword_ids = results.map((kw) => kw.id);
       }
     });
 });
@@ -162,9 +162,25 @@ app.get('/recommend/:type/:id', (req, res) => {
         console.log(err);
         return;
       }
+
       console.log(response.statusCode);
+      if (req.params.type == "Genre") {
+        console.log(genres[req.params.id]);
+      } else if (req.params.type == "Keyword") {
+        console.log(keywords[req.params.id]);
+      } else {
+        console.log("rec type not found");
+      }
       const results = JSON.parse(body);
-      console.log(body);
+      if (results) {
+        if(results.results){
+        console.log(results.results.map((res) => res.title));
+        }
+        else {
+          console.log("WTF===============================");
+          console.log(results);
+        }
+      }
       res.send(results);
     });
 });
