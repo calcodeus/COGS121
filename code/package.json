@@ -1,7 +1,6 @@
 {
   "name": "anime_noobs",
   "version": "1.0.0",
-  "description": "",
   "main": "server.js",
   "scripts": {
     "start": "nodejs server.js"
@@ -10,7 +9,11 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.3",
+    "request": "^2.86.0",
     "kerberos": "~0.0.17",
     "mongodb": "~2.2.19"
-  }
+  },
+  "devDependencies": {},
+  "keywords": [],
+  "description": ""
 }
