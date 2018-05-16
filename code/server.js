@@ -173,10 +173,9 @@ app.get('/recommend/:type/:id', (req, res) => {
       }
       const results = JSON.parse(body);
       if (results) {
-        if(results.results){
-        console.log(results.results.map((res) => res.title));
-        }
-        else {
+        if (results.results) {
+          console.log(results.results.map((res) => res.title));
+        } else {
           console.log("WTF===============================");
           console.log(results);
         }
@@ -185,6 +184,16 @@ app.get('/recommend/:type/:id', (req, res) => {
     });
 });
 
+app.get('/recommendations/:rn', (req, res) => {
+  const recNum = req.params.rn; // matches ':userid' above
+  const val = fakeDatabase[recNum];
+  console.log(recNum, '->', val); // for debugging
+  if (val) {
+    res.send(val);
+  } else {
+    res.send({}); // failed, so return an empty object instead of undefined
+  }
+});
 
 app.listen(3000, () => {
   console.log('Server started at http://localhost:3000/');

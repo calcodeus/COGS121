@@ -72,6 +72,26 @@ http://localhost:3000/petsapp.html
       return defList;
     }
 
+    function fakeRecs() {
+      const mechKW = '10046'
+      const requestURL = 'recommend/Keyword/' + mechKW;
+      $.get(requestURL, (data) => {
+        let resultsField = '';
+        data.results.forEach((d) => {
+          const name = d.title;
+          console.log(name);
+          const poster = d.poster_path
+          console.log(poster);
+          const pre = '<img class="poster" src=http://image.tmdb.org/t/p/w185/';
+          const mid = ' alt=""><a href="mediaPage.html">'
+          const post = '</a><br>'
+          resultsField += pre + poster + mid + name + post;
+        });
+        console.log(resultsField);
+        $('#results').html(resultsField);
+      });
+    }
+
     function LoadRecs() {
       console.dir(Object.keys(keywordList));
       console.dir(Object.keys(genreList));
@@ -110,12 +130,13 @@ http://localhost:3000/petsapp.html
       console.log(typeof favorites);
       console.dir(favorites);
       SetupLists(favorites);
-      LoadRecs();
+      fakeRecs();
+      //LoadRecs();
       $('#next').click(() => {
-        LoadRecs();
+        //LoadRecs();
       });
       $('#previous').click(() => {
-        LoadRecs();
+        //LoadRecs();
       });
 
       // define a generic Ajax error handler:

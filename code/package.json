@@ -1,14 +1,16 @@
 {
-  "name": "petsapp-v1",
+  "name": "anime_noobs",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "nodejs server.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.16.3"
+    "express": "^4.16.3",
+    "kerberos": "~0.0.17",
+    "mongodb": "~2.2.19"
   }
 }
