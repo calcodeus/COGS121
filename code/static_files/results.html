@@ -82,9 +82,9 @@ http://localhost:3000/petsapp.html
           console.log(name);
           const poster = d.poster_path
           console.log(poster);
-          const pre = '<img class="poster" src=http://image.tmdb.org/t/p/w185/';
-          const mid = ' alt=""><a href="mediaPage.html">'
-          const post = '</a><br>'
+          const pre = '<div class="col-sm-4" style="text-align:center; padding-bottom: 30px;"><img class="poster" src=http://image.tmdb.org/t/p/w185/';
+          const mid = ' alt=""><br><a href="mediaPage.html">'
+          const post = '</a></div><br>'
           resultsField += pre + poster + mid + name + post;
         });
         console.log(resultsField);
@@ -209,7 +209,7 @@ http://localhost:3000/petsapp.html
     </center>
     <hr>
 
-    <div id="results">
+    <div id="results" class="row">
       <img class="poster" src=http://image.tmdb.org/t/p/w185//y6Xmo3zHz2zFcqEp1McodElFzUV.jpg alt="">
       <a href="mediaPage.html">movie title here</a>
     </div>

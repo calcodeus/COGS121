@@ -28,7 +28,7 @@
 
     function displayFavorite(favData) {
       let resultDiv = document.getElementById('favDiv');
-      resultDiv.insertAdjacentHTML('beforeend', '<span id="fav-span' + favData.id + '">' + favData.title +
+      resultDiv.insertAdjacentHTML('beforeend', '<span id="fav-span' + favData.id + '">' + favData.title + '&thinsp;' + '&thinsp;' +
         '<button class="fav-del" id="' + favData.id + '"><i class="fas fa-times"></i></button>' + '<br></span>');
       $('#' + favData.id).click((e) => {
         removeFavorite(favData.id);
@@ -97,18 +97,23 @@
 </head>
 
 <body>
-  <h1>Enter your favorite movies and show</h1>
+  <center style="padding-top: 35vh;">
+    <h1>Enter your favorite movies and show</h1>
+  </center>
 
-  <input id="nameBox" type="text" size="20" />
-  <button id="searchButton"><i class="fas fa-plus"></i></button>
-  <button id="next">next</button>
-  <div id="favDiv"></div>
-  <img id="petImage"></img>
-  <div id="box">
-    <div id="text"></div>
-  </div>
+  <center>
+    <div style="padding-top: 20px;">
+      <input id="nameBox" type="text" size="20" />
+      <button id="searchButton"><i class="fas fa-plus"></i></button>
+      <button id="next">next</button>
+    </div>
+    <div style="padding-top: 10px;" id="favDiv"></div>
+    <img id="petImage"></img>
+    <div id="box">
+      <div id="text"></div>
+    </div>
 
-  <hr/>
+  </center>
 
   <div id="status"></div>
 </body>
