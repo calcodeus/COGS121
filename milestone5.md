@@ -1,9 +1,9 @@
 ### Screenshots
 
-![Screenshot 1](https://github.com/calcodeus/COGS121/tree/master/images/M5_1.png)
-![Screenshot 1](https://github.com/calcodeus/COGS121/tree/master/images/M5_2.png)
-![Screenshot 1](https://github.com/calcodeus/COGS121/tree/master/images/M5_3.png)
-![Screenshot 1](https://github.com/calcodeus/COGS121/tree/master/images/M5_4.png)
+![Screenshot 1](https://github.com/calcodeus/COGS121/blob/master/images/M5_1.png)
+![Screenshot 1](https://github.com/calcodeus/COGS121/blob/master/images/M5_2.png)
+![Screenshot 1](https://github.com/calcodeus/COGS121/blob/master/images/M5_3.png)
+![Screenshot 1](https://github.com/calcodeus/COGS121/blob/master/images/M5_4.png)
 
 The UI looks cleaner with all the pages having a 
 uniform center-alignment. Some more specific 
