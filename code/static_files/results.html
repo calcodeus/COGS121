@@ -101,9 +101,9 @@ http://localhost:3000/petsapp.html
                 const name = title.title;
                 console.log(name);
                 const poster = title.poster_path;
-                const pre = '<img class="poster" src=http://image.tmdb.org/t/p/w185/';
-                const mid = ' alt=""><a href="mediaPage.html#' + loc + '">';
-                const post = '</a><br>';
+                const pre = '<div class="col-sm-4" style="text-align:center; padding-bottom: 30px;"><img class="poster" src=http://image.tmdb.org/t/p/w185/';
+                const mid = ' alt=""><br><a href="mediaPage.html#' + loc + '">';
+                const post = '</a></div><br>';
                 resultsField += pre + poster + mid + name + post;
                 let resultDiv = document.getElementById('results');
 
