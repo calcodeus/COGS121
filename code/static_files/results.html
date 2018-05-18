@@ -33,6 +33,7 @@ http://localhost:3000/petsapp.html
     let favorites = {};
     let keywordList = {};
     let genreList = {};
+    let recList = [];
 
     function recFor(type, id) {
       const requestURL = 'recommend/' + type + '/' + id;
@@ -73,23 +74,46 @@ http://localhost:3000/petsapp.html
     }
 
     function fakeRecs() {
-      const mechKW = '10046'
-      const requestURL = 'recommend/Keyword/' + mechKW;
-      $.get(requestURL, (data) => {
-        let resultsField = '';
-        data.results.forEach((d) => {
-          const name = d.title;
-          console.log(name);
-          const poster = d.poster_path
-          console.log(poster);
-          const pre = '<img class="poster" src=http://image.tmdb.org/t/p/w185/';
-          const mid = ' alt=""><a href="mediaPage.html">'
-          const post = '</a><br>'
-          resultsField += pre + poster + mid + name + post;
+      let i = 0;
+      while (i < 30) {
+        i = i + 1;
+        if (i >= Object.keys(favorites).length) {
+          console.log('not enough favorites!');
+          break;
+        }
+        favorites[Object.keys(favorites)[i]].keyword_ids.forEach((kid) => {
+
+          const requestURL = 'recommend/Keyword/' + kid;
+          console.log('hitting: ' + requestURL);
+          $.get(requestURL, (data) => {
+            if (data != []) {
+              console.log(data);
+            }
+            data.forEach((d) => {
+              const getMovieURL = 'getMovie/' + d;
+              $.get(getMovieURL, (title) => {
+                let resultsField = '';
+
+                recList.push(title);
+                sessionStorage.recList = JSON.stringify(recList);
+                const loc = recList.length - 1;
+
+                const name = title.title;
+                console.log(name);
+                const poster = title.poster_path;
+                const pre = '<img class="poster" src=http://image.tmdb.org/t/p/w185/';
+                const mid = ' alt=""><a href="mediaPage.html#' + loc + '">';
+                const post = '</a><br>';
+                resultsField += pre + poster + mid + name + post;
+                let resultDiv = document.getElementById('results');
+
+                resultDiv.insertAdjacentHTML('beforeend', resultsField);
+
+              });
+            });
+          });
         });
-        console.log(resultsField);
-        $('#results').html(resultsField);
-      });
+      }
     }
 
     function LoadRecs() {
@@ -104,6 +128,7 @@ http://localhost:3000/petsapp.html
     function SetupLists(favs) {
       console.log(typeof favs);
       Object.keys(favs).forEach((fv) => {
+        console.log(favs[fv]);
         favs[fv].genre_ids.forEach((gi) => {
           const gscore = genreList[gi];
           if (!gscore) {
@@ -210,8 +235,7 @@ http://localhost:3000/petsapp.html
     <hr>
 
     <div id="results">
-      <img class="poster" src=http://image.tmdb.org/t/p/w185//y6Xmo3zHz2zFcqEp1McodElFzUV.jpg alt="">
-      <a href="mediaPage.html">movie title here</a>
+
     </div>
 
 

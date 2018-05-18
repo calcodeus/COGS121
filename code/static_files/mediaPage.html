@@ -1,16 +1,3 @@
-<!--
-
-Web frontend for petsapp
-
-COGS121 by Philip Guo
-https://github.com/pgbovine/COGS121
-
-Start ../server.js and then visit this URL to view this webpage:
-
-http://localhost:3000/petsapp.html
-
--->
-
 <html>
 
 <head>
@@ -30,36 +17,43 @@ http://localhost:3000/petsapp.html
   <script src="js/bootstrap.min.js"></script>
 
   <script type="text/javascript">
-    function LoadRec(recNumber) {
-      const requestURL = 'recommendations/' + recNumber;
-      console.log('making ajax request to:', requestURL);
+    let recList = [];
 
-      // From: http://learn.jquery.com/ajax/jquery-ajax-methods/
-      // Using the core $.ajax() method since it's the most flexible.
-      // ($.get() and $.getJSON() are nicer convenience functions)
-      $.ajax({
-        // all URLs are relative to http://localhost:3000/
-        url: requestURL,
-        type: 'GET',
-        dataType: 'json', // this URL returns data in JSON format
-        success: (data) => {
-          console.log('You received some data!', data);
-          $('#movieTitle').html(data.title + " (" + data.year + ")");
-          $('#poster').html('<img class="poster" src=' + data.poster + ' alt="">');
-          $('#description').html("Description: " + data.description);
-          $('#rating').html(data.rating);
-        },
-      });
+    function LoadRec(item) {
+      $('#movieTitle').html(item.title + " (" + item.release_date.substring(0,4) + ")");
+      $('#poster').html('<img class="poster" src=http://image.tmdb.org/t/p/w185/' + item.poster_path + ' alt="">');
+      $('#description').html("Description: " + item.overview);
+      $('#rating').html(item.vote_average);
     }
+
+    let index = 0;
+    let nextIndex = 0;
+    let prevIndex = 0;
 
     // jQuery convention for running when the document has been fully loaded:
     $(document).ready(() => {
-      LoadRec(1);
+      index = window.location.hash.substring(1);
+      recList = JSON.parse(sessionStorage.recList);
+
+      prevIndex = (index + recList.length - 1) % recList.length;
+      console.log(prevIndex);
+      nextIndex = (index + 1) % recList.length;
+      console.log(nextIndex);
+
+      LoadRec(recList[index]);
+
       $('#next').click(() => {
-        LoadRec(2);
+        index = nextIndex;
+        prevIndex = (index + recList.length - 1) % recList.length;
+        nextIndex = (index + 1) % recList.length;
+        LoadRec(recList[index]);
       });
       $('#previous').click(() => {
-        LoadRec(1);
+        index = nextIndex;
+        prevIndex = (index + recList.length - 1) % recList.length;
+        nextIndex = (index + 1) % recList.length;
+        LoadRec(recList[index]);
+        LoadRec(recList[index]);
       });
 
       // define a generic Ajax error handler:

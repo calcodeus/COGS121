@@ -49,11 +49,26 @@
             return kw.id
           });
         },
+        error: function(data) {
+          console.log('Error: ' + data);
+        }
       });
     }
 
     // jQuery convention for running when the document has been fully loaded:
     $(document).ready(() => {
+
+      const stored = localStorage.favorites;
+
+      if (stored) {
+        const data = JSON.parse(stored);
+        console.log(Object.keys(data));
+        Object.keys(data).forEach((key) => {
+          favorites[key] = data[key];
+          displayFavorite(data[key]);
+        });
+      }
+
       $('#searchButton').click(() => {
         const requestURL = 'find/' + $('#nameBox').val();
         console.log('making ajax request to:', requestURL);
@@ -77,16 +92,18 @@
               console.log("no results found");
             }
           },
+          error: function(data) {
+            console.log('Error: ' + data);
+          }
         });
 
       });
       $('#next').click(() => {
-        window.location = "results.html"
+        localStorage.favorites = JSON.stringify(favorites);
+        window.location = "results.html";
       });
 
-      $('#next').click(() => {
-        localStorage.favorites = JSON.stringify(favorites);
-      });
+      $('#next').click(() => {});
       // define a generic Ajax error handler:
       // http://api.jquery.com/ajaxerror/
       $(document).ajaxError(() => {
