@@ -2,7 +2,7 @@
 This demo visualises wine and cheese pairings.
 */
 
-$(function(){
+$(function() {
 
   var layoutPadding = 50;
   var aniDur = 500;
@@ -26,48 +26,52 @@ $(function(){
   });
 
   var infoTemplate = Handlebars.compile([
-    '<p class="ac-name">{{name}}</p>',
-    '<p class="ac-node-type"><i class="fa fa-info-circle"></i> {{NodeTypeFormatted}} {{#if Type}}({{Type}}){{/if}}</p>',
-    '{{#if Milk}}<p class="ac-milk"><i class="fa fa-angle-double-right"></i> {{Milk}}</p>{{/if}}',
-    '{{#if Country}}<p class="ac-country"><i class="fa fa-map-marker"></i> {{Country}}</p>{{/if}}',
-    '<p class="ac-more"><i class="fa fa-external-link"></i> <a target="_blank" href="https://duckduckgo.com/?q={{name}}">More information</a></p>'
+    '<center class="ac-name">{{name}}</center>',
+    '<div class="row" style="text-align: center; margin: auto;padding-top: 20px;"><div class="col-xs-1"></div><div class="col-xs-5"><img style="padding-bottom: 15px; max-width: 190px;" src="codegeass.jpg"></div>',
+    '<div class="col-xs-5">{{#if Milk}}<p class="ac-milk"> {{Milk}}</p>{{/if}}</div><div class="col-xs-1"></div></div>',
+    '{{#if Country}}<center class="ac-country"><i class="fa fa-map-marker"></i> {{Country}}</center>{{/if}}',
   ].join(''));
 
   // when both graph export json and style loaded, init cy
-  Promise.all([ graphP, styleP ]).then(initCy);
+  Promise.all([graphP, styleP]).then(initCy);
 
   var allNodes = null;
   var allEles = null;
   var lastHighlighted = null;
   var lastUnhighlighted = null;
 
-  function getFadePromise( ele, opacity ){
+  function getFadePromise(ele, opacity) {
     return ele.animation({
-      style: { 'opacity': opacity },
+      style: {
+        'opacity': opacity
+      },
       duration: aniDur
     }).play().promise();
   };
 
-  var restoreElesPositions = function( nhood ){
-    return Promise.all( nhood.map(function( ele ){
+  var restoreElesPositions = function(nhood) {
+    return Promise.all(nhood.map(function(ele) {
       var p = ele.data('orgPos');
 
       return ele.animation({
-        position: { x: p.x, y: p.y },
+        position: {
+          x: p.x,
+          y: p.y
+        },
         duration: aniDur,
         easing: easing
       }).play().promise();
-    }) );
+    }));
   };
 
-  function highlight( node ){
+  function highlight(node) {
     var oldNhood = lastHighlighted;
 
     var nhood = lastHighlighted = node.closedNeighborhood();
-    var others = lastUnhighlighted = cy.elements().not( nhood );
+    var others = lastUnhighlighted = cy.elements().not(nhood);
 
-    var reset = function(){
-      cy.batch(function(){
+    var reset = function() {
+      cy.batch(function() {
         others.addClass('hidden');
         nhood.removeClass('hidden');
 
@@ -75,25 +79,28 @@ $(function(){
 
         nhood.addClass('highlighted');
 
-        others.nodes().forEach(function(n){
+        others.nodes().forEach(function(n) {
           var p = n.data('orgPos');
 
-          n.position({ x: p.x, y: p.y });
+          n.position({
+            x: p.x,
+            y: p.y
+          });
         });
       });
 
-      return Promise.resolve().then(function(){
-        if( isDirty() ){
+      return Promise.resolve().then(function() {
+        if (isDirty()) {
           return fit();
         } else {
           return Promise.resolve();
         };
-      }).then(function(){
-        return Promise.delay( aniDur );
+      }).then(function() {
+        return Promise.delay(aniDur);
       });
     };
 
-    var runLayout = function(){
+    var runLayout = function() {
       var p = node.data('orgPos');
 
       var l = nhood.filter(':visible').makeLayout({
@@ -109,14 +116,16 @@ $(function(){
           y2: p.y + 1
         },
         avoidOverlap: true,
-        concentric: function( ele ){
-          if( ele.same( node ) ){
+        concentric: function(ele) {
+          if (ele.same(node)) {
             return 2;
           } else {
             return 1;
           }
         },
-        levelWidth: function(){ return 1; },
+        levelWidth: function() {
+          return 1;
+        },
         padding: layoutPadding
       });
 
@@ -127,7 +136,7 @@ $(function(){
       return promise;
     };
 
-    var fit = function(){
+    var fit = function() {
       return cy.animation({
         fit: {
           eles: nhood.filter(':visible'),
@@ -138,29 +147,30 @@ $(function(){
       }).play().promise();
     };
 
-    var showOthersFaded = function(){
-      return Promise.delay( 250 ).then(function(){
-        cy.batch(function(){
+    var showOthersFaded = function() {
+      return Promise.delay(250).then(function() {
+        cy.batch(function() {
           others.removeClass('hidden').addClass('faded');
         });
       });
     };
 
     return Promise.resolve()
-      .then( reset )
-      .then( runLayout )
-      .then( fit )
-      .then( showOthersFaded )
-    ;
+      .then(reset)
+      .then(runLayout)
+      .then(fit)
+      .then(showOthersFaded);
 
   }
 
-  function isDirty(){
+  function isDirty() {
     return lastHighlighted != null;
   }
 
-  function clear( opts ){
-    if( !isDirty() ){ return Promise.resolve(); }
+  function clear(opts) {
+    if (!isDirty()) {
+      return Promise.resolve();
+    }
 
     opts = $.extend({
 
@@ -174,68 +184,70 @@ $(function(){
 
     lastHighlighted = lastUnhighlighted = null;
 
-    var hideOthers = function(){
-      return Promise.delay( 125 ).then(function(){
+    var hideOthers = function() {
+      return Promise.delay(125).then(function() {
         others.addClass('hidden');
 
-        return Promise.delay( 125 );
+        return Promise.delay(125);
       });
     };
 
-    var showOthers = function(){
-      cy.batch(function(){
+    var showOthers = function() {
+      cy.batch(function() {
         allEles.removeClass('hidden').removeClass('faded');
       });
 
-      return Promise.delay( aniDur );
+      return Promise.delay(aniDur);
     };
 
-    var restorePositions = function(){
-      cy.batch(function(){
-        others.nodes().forEach(function( n ){
+    var restorePositions = function() {
+      cy.batch(function() {
+        others.nodes().forEach(function(n) {
           var p = n.data('orgPos');
 
-          n.position({ x: p.x, y: p.y });
+          n.position({
+            x: p.x,
+            y: p.y
+          });
         });
       });
 
-      return restoreElesPositions( nhood.nodes() );
+      return restoreElesPositions(nhood.nodes());
     };
 
-    var resetHighlight = function(){
+    var resetHighlight = function() {
       nhood.removeClass('highlighted');
     };
 
     return Promise.resolve()
-      .then( resetHighlight )
-      .then( hideOthers )
-      .then( restorePositions )
-      .then( showOthers )
-    ;
+      .then(resetHighlight)
+      .then(hideOthers)
+      .then(restorePositions)
+      .then(showOthers);
   }
 
-  function showNodeInfo( node ){
-    $('#info').html( infoTemplate( node.data() ) ).show();
+  function showNodeInfo(node) {
+    $('#info').html(infoTemplate(node.data())).show();
   }
 
-  function hideNodeInfo(){
+  function hideNodeInfo() {
     $('#info').hide();
   }
 
-  function initCy( then ){
+  function initCy(then) {
     var loading = document.getElementById('loading');
     var expJson = then[0];
     var styleJson = then[1];
     var elements = expJson.elements;
 
-    elements.nodes.forEach(function(n){
+    elements.nodes.forEach(function(n) {
       var data = n.data;
 
       data.NodeTypeFormatted = data.NodeType;
 
-      if( data.NodeTypeFormatted === 'RedWine' ){
+      if (data.NodeTypeFormatted === 'RedWine') {
         data.NodeTypeFormatted = 'Red Wine';
-      } else if( data.NodeTypeFormatted === 'WhiteWine' ){
+      } else if (data.NodeTypeFormatted === 'WhiteWine') {
         data.NodeTypeFormatted = 'White Wine';
       }
 
@@ -249,7 +261,10 @@ $(function(){
 
     cy = window.cy = cytoscape({
       container: document.getElementById('cy'),
-      layout: { name: 'preset', padding: layoutPadding },
+      layout: {
+        name: 'preset',
+        padding: layoutPadding
+      },
       style: styleJson,
       elements: elements,
       motionBlur: true,
@@ -261,7 +276,7 @@ $(function(){
     allNodes = cy.nodes();
     allEles = cy.elements();
 
-    cy.on('free', 'node', function( e ){
+    cy.on('free', 'node', function(e) {
       var n = e.cyTarget;
       var p = n.position();
 
@@ -271,25 +286,25 @@ $(function(){
       });
     });
 
-    cy.on('tap', function(){
+    cy.on('tap', function() {
       $('#search').blur();
     });
 
-    cy.on('select unselect', 'node', _.debounce( function(e){
+    cy.on('select unselect', 'node', _.debounce(function(e) {
       var node = cy.$('node:selected');
 
-      if( node.nonempty() ){
-        showNodeInfo( node );
+      if (node.nonempty()) {
+        showNodeInfo(node);
 
-        Promise.resolve().then(function(){
-          return highlight( node );
+        Promise.resolve().then(function() {
+          return highlight(node);
         });
       } else {
         hideNodeInfo();
         clear();
       }
 
-    }, 100 ) );
+    }, 100));
 
   }
 
@@ -298,24 +313,23 @@ $(function(){
   $('#search').typeahead({
     minLength: 2,
     highlight: true,
-  },
-  {
+  }, {
     name: 'search-dataset',
-    source: function( query, cb ){
-      function matches( str, q ){
+    source: function(query, cb) {
+      function matches(str, q) {
         str = (str || '').toLowerCase();
         q = (q || '').toLowerCase();
 
-        return str.match( q );
+        return str.match(q);
       }
 
       var fields = ['name', 'NodeType', 'Country', 'Type', 'Milk'];
 
-      function anyFieldMatches( n ){
-        for( var i = 0; i < fields.length; i++ ){
+      function anyFieldMatches(n) {
+        for (var i = 0; i < fields.length; i++) {
           var f = fields[i];
 
-          if( matches( n.data(f), query ) ){
+          if (matches(n.data(f), query)) {
             return true;
           }
         }
@@ -323,51 +337,51 @@ $(function(){
         return false;
       }
 
-      function getData(n){
+      function getData(n) {
         var data = n.data();
 
         return data;
       }
 
-      function sortByName(n1, n2){
-        if( n1.data('name') < n2.data('name') ){
+      function sortByName(n1, n2) {
+        if (n1.data('name') < n2.data('name')) {
           return -1;
-        } else if( n1.data('name') > n2.data('name') ){
+        } else if (n1.data('name') > n2.data('name')) {
           return 1;
         }
 
         return 0;
       }
 
-      var res = allNodes.stdFilter( anyFieldMatches ).sort( sortByName ).map( getData );
+      var res = allNodes.stdFilter(anyFieldMatches).sort(sortByName).map(getData);
 
-      cb( res );
+      cb(res);
     },
     templates: {
       suggestion: infoTemplate
     }
-  }).on('typeahead:selected', function(e, entry, dataset){
+  }).on('typeahead:selected', function(e, entry, dataset) {
     var n = cy.getElementById(entry.id);
 
-    cy.batch(function(){
+    cy.batch(function() {
       allNodes.unselect();
 
       n.select();
     });
 
-    showNodeInfo( n );
-  }).on('keydown keypress keyup change', _.debounce(function(e){
+    showNodeInfo(n);
+  }).on('keydown keypress keyup change', _.debounce(function(e) {
     var thisSearch = $('#search').val();
 
-    if( thisSearch !== lastSearch ){
+    if (thisSearch !== lastSearch) {
       $('.tt-dropdown-menu').scrollTop(0);
 
       lastSearch = thisSearch;
     }
   }, 50));
 
-  $('#reset').on('click', function(){
-    if( isDirty() ){
+  $('#reset').on('click', function() {
+    if (isDirty()) {
       clear();
     } else {
       allNodes.unselect();
@@ -387,7 +401,7 @@ $(function(){
     }
   });
 
-  $('#filters').on('click', 'input', function(){
+  $('#filters').on('click', 'input', function() {
 
     var soft = $('#soft').is(':checked');
     var semiSoft = $('#semi-soft').is(':checked');
@@ -409,55 +423,62 @@ $(function(){
     var newWorld = $('#chs-nworld').is(':checked');
     var naCountry = $('#chs-na').is(':checked');
 
-    cy.batch(function(){
+    cy.batch(function() {
 
-      allNodes.forEach(function( n ){
+      allNodes.forEach(function(n) {
         var type = n.data('NodeType');
 
         n.removeClass('filtered');
 
-        var filter = function(){
+        var filter = function() {
           n.addClass('filtered');
         };
 
-        if( type === 'Cheese' || type === 'CheeseType' ){
+        if (type === 'Cheese' || type === 'CheeseType') {
 
           var cType = n.data('Type');
           var cty = n.data('Country');
 
-          if(
+          if (
             // moisture
-               (cType === 'Soft' && !soft)
-            || (cType === 'Semi-soft' && !semiSoft)
-            || (cType === undefined && !na)
-            || (cType === 'Semi-hard' && !semiHard)
-            || (cType === 'Hard' && !hard)
+            (cType === 'Soft' && !soft) ||
+            (cType === 'Semi-soft' && !semiSoft) ||
+            (cType === undefined && !na) ||
+            (cType === 'Semi-hard' && !semiHard) ||
+            (cType === 'Hard' && !hard)
 
             // country
-            || (cty === 'England' && !england)
-            || (cty === 'France' && !france)
-            || (cty === 'Italy' && !italy)
-            || (cty === 'US' && !usa)
-            || (cty === 'Spain' && !spain)
-            || (cty === 'Switzerland' && !switzerland)
-            || ( (cty === 'Holland' || cty === 'Ireland' || cty === 'Portugal' || cty === 'Scotland' || cty === 'Wales') && !euro )
-            || ( (cty === 'Canada' || cty === 'Australia') && !newWorld )
-            || (cty === undefined && !naCountry)
-          ){
+            ||
+            (cty === 'England' && !england) ||
+            (cty === 'France' && !france) ||
+            (cty === 'Italy' && !italy) ||
+            (cty === 'US' && !usa) ||
+            (cty === 'Spain' && !spain) ||
+            (cty === 'Switzerland' && !switzerland) ||
+            ((cty === 'Holland' || cty === 'Ireland' || cty === 'Portugal' || cty === 'Scotland' || cty === 'Wales') && !euro) ||
+            ((cty === 'Canada' || cty === 'Australia') && !newWorld) ||
+            (cty === undefined && !naCountry)
+          ) {
             filter();
           }
 
-        } else if( type === 'RedWine' ){
+        } else if (type === 'RedWine') {
 
-          if( !red ){ filter(); }
+          if (!red) {
+            filter();
+          }
 
-        } else if( type === 'WhiteWine' ){
+        } else if (type === 'WhiteWine') {
 
-          if( !white ){ filter(); }
+          if (!white) {
+            filter();
+          }
 
-        } else if( type === 'Cider' ){
+        } else if (type === 'Cider') {
 
-          if( !cider ){ filter(); }
+          if (!cider) {
+            filter();
+          }
 
         }
 
