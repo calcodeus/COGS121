@@ -119,7 +119,6 @@ function cacheNpages(id, name, i, n) {
   }, 15000);
 }
 
-
 //finds keywords for a movie or show
 app.get('/keywords/:type/:id', (req, res) => {
   const id = req.params.id;
@@ -148,15 +147,11 @@ app.get('/keywords/:type/:id', (req, res) => {
       if (results) {
         results.forEach((kw) => {
           keywords[kw.id] = kw.name;
-        });
-        results.forEach((kw) => {
           cacheNewKeyword(kw.id, kw.name);
         });
       }
     });
 });
-
-app.get('/users', (req, res) => {});
 
 app.get('/find/:searchName', (req, res) => {
   const query1 = req.params.searchName;
@@ -221,7 +216,6 @@ app.get('/getDictionaries', (req, res) => {
     keywords
   });
 });
-
 
 //Sample code for a mongoose lookup
 function getMovie(id) {

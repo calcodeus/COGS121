@@ -40,7 +40,7 @@ http://localhost:3000/petsapp.html
     let favorites = {};
     let keywordList = {};
     let genreList = {};
-    let recList = [];
+    let recommendations = {};
 
     function recFor(type, id) {
       const requestURL = 'recommend/' + type + '/' + id;
@@ -48,24 +48,6 @@ http://localhost:3000/petsapp.html
       return $.get(requestURL);
     }
 
-
-    function displayRecs(recList) {
-      let resultsField = '';
-      recList.forEach((d) => {
-        const name = d.title;
-        console.log(name);
-        const poster = d.poster_path
-        console.log(poster);
-
-        const pre = '<img class="poster" src=http://image.tmdb.org/t/p/w185/';
-        const mid = ' alt=""><a href="mediaPage.html">'
-        const post = '</a><br>'
-
-        resultsField += pre + poster + mid + name + post;
-
-      });
-      $('#results').html(resultsField);
-    }
 
     function keywordSearch() {
       const defList = [];
@@ -91,36 +73,41 @@ http://localhost:3000/petsapp.html
         favorites[Object.keys(favorites)[i]].keyword_ids.forEach((kid) => {
 
           const requestURL = 'recommend/Keyword/' + kid;
-          console.log('hitting: ' + requestURL);
+          //console.log('hitting: ' + requestURL);
           $.get(requestURL, (data) => {
             if (data != []) {
-              console.log(data);
+              //console.log(data);
             }
             data.forEach((d) => {
               const getMovieURL = 'getMovie/' + d;
+              const recList = [];
               $.get(getMovieURL, (title) => {
-                let resultsField = '';
-
-                recList.push(title);
-                sessionStorage.recList = JSON.stringify(recList);
-                const loc = recList.length - 1;
-
-                const name = title.title;
-                console.log(name);
-                const poster = title.poster_path;
-                const pre = '<div class="col-sm-4" style="text-align:center; padding-bottom: 30px;"><img class="poster" src=http://image.tmdb.org/t/p/w185/';
-                const mid = ' alt=""><br><a href="mediaPage.html#' + loc + '">';
-                const post = '</a></div><br>';
-                resultsField += pre + poster + mid + name + post;
-                let resultDiv = document.getElementById('results');
-
-                resultDiv.insertAdjacentHTML('beforeend', resultsField);
-
+                if (!recommendations[title.id]) {
+                  recommendations[title.id] = title;
+                  recList.push(title);
+                  sessionStorage.recList = JSON.stringify(recList);
+                  const loc = recList.length - 1;
+                  DisplayRec(title, loc);
+                }
               });
             });
           });
         });
       }
+    }
+
+    function DisplayRec(title, number) {
+      let resultsField = '';
+      const name = title.title;
+      //console.log(name);
+      const poster = title.poster_path;
+      const pre = '<div class="col-sm-4" style="text-align:center; padding-bottom: 30px;"><img class="poster" src=http://image.tmdb.org/t/p/w185/';
+      const mid = ' alt=""><br><a href="mediaPage.html#' + number + '">';
+      const post = '</a></div><br>';
+      resultsField += pre + poster + mid + name + post;
+      let resultDiv = document.getElementById('results');
+
+      resultDiv.insertAdjacentHTML('beforeend', resultsField);
     }
 
     function LoadRecs() {
@@ -135,32 +122,50 @@ http://localhost:3000/petsapp.html
     function SetupLists(favs) {
       console.log(typeof favs);
       Object.keys(favs).forEach((fv) => {
-        console.log(favs[fv]);
+        //console.log(favs[fv]);
         favs[fv].genre_ids.forEach((gi) => {
-          const gscore = genreList[gi];
+          if (!genreList[gi]) {
+            genreList[gi] = {}
+          }
+          const gscore = genreList[gi].score;
           if (!gscore) {
-            genreList[gi] = 1;
+            genreList[gi].score = 1;
           } else {
-            genreList[gi] = gscore + 1;
+            genreList[gi].score = gscore + 1;
+          }
+          if (!genreList[gi].basis) {
+            genreList[gi].basis = [fv];
+          } else {
+            genreList[gi].basis.push(fv);
           }
         });
         favs[fv].keyword_ids.forEach((ki) => {
-          const kscore = keywordList[ki];
+          if (!keywordList[ki]) {
+            keywordList[ki] = {}
+          }
+          const kscore = keywordList[ki].score;
           if (!kscore) {
-            keywordList[ki] = 1;
+            keywordList[ki].score = 1;
           } else {
-            keywordList[ki] = kscore + 1;
+            keywordList[ki].score = kscore + 1;
+          }
+          if (!keywordList[ki].basis) {
+            keywordList[ki].basis = [fv];
+          } else {
+            keywordList[ki].basis.push(fv);
           }
         });
       });
+      console.dir(keywordList);
+      console.dir(genreList);
     }
 
     // jQuery convention for running when the document has been fully loaded:
     $(document).ready(() => {
       favorites = JSON.parse(localStorage.favorites);
-      console.log('favorites: ');
-      console.log(typeof favorites);
-      console.dir(favorites);
+      //console.log('favorites: ');
+      //console.log(typeof favorites);
+      //console.dir(favorites);
       SetupLists(favorites);
       fakeRecs();
       //LoadRecs();
