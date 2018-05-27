@@ -164,51 +164,52 @@ app.get('/find/:searchName', (req, res) => {
     include_adult: 'false'
   };
   request({
-      url: url,
-      qs: propertiesObject
-    },
-    (err, response, body) => {
-      if (err) {
-        console.log(err);
-        return;
-      }
-      const results = JSON.parse(body).results;
+    url: url,
+    qs: propertiesObject
+  }, (err, response, body) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+    const results = JSON.parse(body).results;
 
-      const mediaResults = [];
-      results.forEach((res) => {
-        if (res.known_for) return;
-        if (res.name) {
-          res.title = res.name;
-          res.release_date = res.first_air_date;
-          mediaResults.push(res);
+    const mediaResults = [];
+    results.forEach((res) => {
+      if (res.known_for) return;
+      if (res.name) {
+        res.title = res.name;
+        res.release_date = res.first_air_date;
+        mediaResults.push(res);
+      } else {
+        mediaResults.push(res);
+      }
+    });
+
+    mediaResults.forEach((title) => {
+
+      Title.findOne({
+        id: title.id
+      }, (err, found) => {
+        if (err) console.log('err while trying to find title: ' + id);
+        else if (found) {
+          console.log('movie already cached');
         } else {
-          mediaResults.push(res);
+          console.log('movie not yet cached');
+          const newTitle = titleToSchema(title);
+          newTitle.$__save({}, function(err) {
+            if (err) console.log('save problem');
+            else {
+              console.log('added a title to collection');
+            }
+          });
         }
       });
-
-      mediaResults.forEach((title) => {
-
-        Title.findOne({
-          id: title.id
-        }, (err, found) => {
-          if (err) console.log('err while trying to find user: ' + id);
-          else if (found) {
-            console.log('movie already cached');
-          } else {
-            console.log('movie not yet cached');
-            const newTitle = titleToSchema(title);
-            newTitle.$__save({}, function(err) {
-              if (err) console.log('save problem');
-              else {
-                console.log('added a title to collection');
-              }
-            });
-          }
-        });
-      });
-      res.send(mediaResults);
     });
+    res.send(mediaResults);
+  });
 });
+
+
 
 app.get('/getDictionaries', (req, res) => {
   res.send({
@@ -231,50 +232,59 @@ function getMovie(id) {
     }
   });
 }
-
 //Adds a new keyword with recommended movies and show to the cache
 function cacheNewKeyword(_id, _name) {
-  const url = 'https://api.themoviedb.org/3/discover/movie?';
-  const animeGenre = '18';
-  const animeKeyword = '210024';
-  const propertiesObject = {
-    api_key: TMDB_API_Key,
-    language: 'en-US',
-    with_genres: animeGenre,
-    with_keywords: animeKeyword + ', ' + _id
-  };
-  request({
-      url: url,
-      qs: propertiesObject
-    },
-    (err, response, body) => {
-      if (err) {
-        console.log(err);
-        return;
-      }
-      const results = JSON.parse(body);
-      if (results) {
-        if (results.results) {
-          console.log('keyword results for ' + _name);
-          var _recs = results.results.map((rec) => {
-            return rec.id;
-          });
-          var dbEntry = new Keyword({
-            id: _id,
-            name: _name,
-            recs: _recs
-          });
-          dbEntry.save(function(err) {
-            if (err) throw err;
-            console.log('updated Keyword Cache: ' + _name);
-          });
-          console.log(results.results.map((res) => res.title));
-        } else {
-          console.log("WTF===============================");
-          console.log(results);
-        }
-      }
-    });
+
+  Keyword.findOne({
+    id: _id
+  }, (error, found) => {
+    if (error) {
+      console.log('error fetching genre: ' + _name);
+    } else if (found) {
+      console.log('keyword already cached: ' + _name);
+    } else {
+      console.log('caching new keyword: ' + _name);
+      const url = 'https://api.themoviedb.org/3/discover/movie?';
+      const animeGenre = '18';
+      const animeKeyword = '210024';
+      const propertiesObject = {
+        api_key: TMDB_API_Key,
+        language: 'en-US',
+        with_genres: animeGenre,
+        with_keywords: animeKeyword + ', ' + _id
+      };
+      request({
+          url: url,
+          qs: propertiesObject
+        },
+        (err, response, body) => {
+          if (err) {
+            console.log(err);
+            return;
+          }
+          const results = JSON.parse(body);
+          if (results) {
+            if (results.results) {
+              var _recs = results.results.map((rec) => {
+                return rec.id;
+              });
+              var dbEntry = new Keyword({
+                id: _id,
+                name: _name,
+                recs: _recs
+              });
+              dbEntry.save(function(err) {
+                if (err) throw err;
+              });
+              console.log(results.results.map((res) => res.title));
+            } else {
+              console.log("WTF===============================");
+              console.log(results);
+            }
+          }
+        });
+    }
+  });
 }
 
 function cacheNewGenre(_id, _name, page) {
@@ -345,27 +355,44 @@ function cacheNewGenre(_id, _name, page) {
     });
 }
 
-app.get('/getMovie/:id', (req, res) =>{
-  const url = 'https://api.themoviedb.org/3/movie/' + req.params.id;
-  const propertiesObject = {
-    api_key: TMDB_API_Key,
-  };
-  request({
-      url: url,
-      qs: propertiesObject
-    },
-    (err, response, body) => {
-      if (err) {
-        console.log('err in movie get', err);
-        return;
-      }
-      const result = JSON.parse(body);
-      if (result) {
-        res.send(result);
-      } else {
-        console.log('no such movie');
-      }
-    });
+app.get('/getMovie/:id', (req, res) => {
+  Title.findOne({
+    id: req.params.id
+  }, (err, found) => {
+    if (err) console.log('err while trying to find title: ' + id);
+    else if (found) {
+      res.send(found);
+      console.log('movie already cached');
+    } else {
+      const url = 'https://api.themoviedb.org/3/movie/' + req.params.id;
+      const propertiesObject = {
+        api_key: TMDB_API_Key,
+      };
+      request({
+          url: url,
+          qs: propertiesObject
+        },
+        (err, response, body) => {
+          if (err) {
+            console.log('err in movie get', err);
+            return;
+          }
+          const result = JSON.parse(body);
+          if (result) {
+            res.send(result);
+            const newTitle = titleToSchema(result);
+            newTitle.$__save({}, function(err) {
+              if (err) console.log('save problem');
+              else {
+                console.log('added a title to collection');
+              }
+            });
+          } else {
+            console.log('no such movie');
+          }
+        });
+    }
+  });
 });
 
 //Looks up recommendations in the cache using the id.
@@ -404,23 +431,6 @@ app.get('/recommend/Genre/:id', (req, res) => {
   });
 });
 
-const fakeDatabase = {
-  '1': {
-    id: '1',
-    title: 'Death Note',
-    year: '2006',
-    rating: "9.0",
-    poster: "deathnote.jpg",
-    description: "An intelligent high school student goes on a secret crusade to eliminate criminals from the world after discovering a notebook capable of killing anyone whose name is written into it."
-  },
-  '2': {
-    title: 'Code Geass',
-    year: '2006',
-    rating: "8.7",
-    poster: "codegeass.jpg",
-    description: "The Empire of Britannia has invaded Japan using giant robot weapons called Knightmare Frames. Japan is now referred to as Area 11, and its people the 11's."
-  },
-};
 
 app.listen(3000, () => {
   console.log('Server started at http://localhost:3000/');
