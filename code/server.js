@@ -96,6 +96,7 @@ request({
           console.log(err1);
           return;
         }
+        console.log(body);
         const results = JSON.parse(body);
         const results1 = JSON.parse(body1);
         results.genres.forEach((genre) => {

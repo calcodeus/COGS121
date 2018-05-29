@@ -28,7 +28,22 @@ http://localhost:3000/petsapp.html
 
   <script src="jquery-3.3.1.min.js"></script>
   <script src="js/bootstrap.min.js"></script>
+  <script src="fastclick.min.js"></script>
+  <script src="jquery.min.js"></script>
 
+  <script src="cytoscape.min.js"></script>
+
+  <script src="jquery.qtip.min.js"></script>
+  <link href="jquery.qtip.min.css" rel="stylesheet" type="text/css" />
+  <script src="cytoscape-qtip.js"></script>
+
+  <script src="bluebird.min.js"></script>
+  <script src="bootstrap.min.js"></script>
+  <script src="typeahead.bundle.js"></script>
+  <script src="handlebars.min.js"></script>
+  <script src="lodash.min.js"></script>
+
+  <script src="demo.js"></script>
   <!-- wine and cheese links  -->
   <link href="font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="bootstrap-3.3.7-dist/css/bootstrap.min.css">
@@ -39,6 +54,7 @@ http://localhost:3000/petsapp.html
   <script type="text/javascript">
     let favorites = {};
     let keywordList = {};
+    const combined = [];
     let genreList = {};
     let recommendations = {};
 
@@ -47,7 +63,6 @@ http://localhost:3000/petsapp.html
       //console.log('making ajax request to:', requestURL);
       return $.get(requestURL);
     }
-
 
     function keywordSearch() {
       const defList = [];
@@ -97,6 +112,7 @@ http://localhost:3000/petsapp.html
     }
 
     function DisplayRec(title, number) {
+      return;
       if(!title){
         console.log('shits broke');
       }
@@ -118,39 +134,9 @@ http://localhost:3000/petsapp.html
       resultDiv.insertAdjacentHTML('beforeend', resultsField);
     }
 
-    function LoadRecs() {
-      console.dir(Object.keys(keywordList));
-      console.dir(Object.keys(genreList));
-      var promises = keywordSearch();
-      Promise.all(promises).then((results) => {
-        console.log(typeof results);
-        console.log(results);
-        results.forEach((result) => {
-          result.forEach((d) => {
-            const getMovieURL = 'getMovie/' + d
-            console.log(getMovieURL);
-            const recList = [];
-            $.get(getMovieURL, (title) => {
-              if (!recommendations[title.id]) {
-                recommendations[title.id] = title;
-                recList.push(title);
-                sessionStorage.recList = JSON.stringify(recList);
-                const loc = recList.length - 1;
-                DisplayRec(title, loc);
-              }
-            });
-          });
-        });
-      });
-      //$.when.apply(this, defList).then((r1 r2 r3) => {
-      //  console.log(typeof results);
-
-      //  console.log(results);
-      //});
-    }
 
     function SetupLists(favs) {
-      console.log(typeof favs);
+      //console.log(typeof favs);
       Object.keys(favs).forEach((fv) => {
         //console.log(favs[fv]);
         favs[fv].genre_ids.forEach((gi) => {
@@ -186,19 +172,16 @@ http://localhost:3000/petsapp.html
           }
         });
       });
-      console.dir(keywordList);
-      console.dir(genreList);
+      //console.dir(keywordList);
+      //console.dir(genreList);
     }
 
     // jQuery convention for running when the document has been fully loaded:
     $(document).ready(() => {
-      favorites = JSON.parse(localStorage.favorites);
       //console.log('favorites: ');
       //console.log(typeof favorites);
       //console.dir(favorites);
-      SetupLists(favorites);
       //fakeRecs();
-      LoadRecs();
       $('#next').click(() => {
         //LoadRecs();
       });
@@ -294,22 +277,7 @@ http://localhost:3000/petsapp.html
   <div id="info">,
   </div>
 
-  <script src="fastclick.min.js"></script>
-  <script src="jquery.min.js"></script>
 
-  <script src="cytoscape.min.js"></script>
-
-  <script src="jquery.qtip.min.js"></script>
-  <link href="jquery.qtip.min.css" rel="stylesheet" type="text/css" />
-  <script src="cytoscape-qtip.js"></script>
-
-  <script src="bluebird.min.js"></script>
-  <script src="bootstrap.min.js"></script>
-  <script src="typeahead.bundle.js"></script>
-  <script src="handlebars.min.js"></script>
-  <script src="lodash.min.js"></script>
-
-  <script src="demo.js"></script>
 
   <center style="position: absolute; left: 50%; top: -1.5%;">
     <h1 style="color: #fff; position: relative; left: -50%; z-index: 9999;">Recommendations</h1>

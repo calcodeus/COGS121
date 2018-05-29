@@ -46,7 +46,7 @@
         success: (data) => {
           console.log(data);
           favorites[id].keyword_ids = data.map((kw) => {
-            return kw.id
+            return kw;
           });
         },
         error: function(data) {

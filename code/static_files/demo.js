@@ -3,6 +3,10 @@ This demo visualises wine and cheese pairings.
 */
 
 $(function() {
+  favorites = JSON.parse(localStorage.favorites);
+
+  SetupLists(favorites);
+
 
   var layoutPadding = 50;
   var aniDur = 500;
@@ -25,6 +29,8 @@ $(function() {
     dataType: 'text'
   });
 
+  LoadRecs();
+
   var infoTemplate = Handlebars.compile([
     '<center class="ac-name">{{name}}</center>',
     '<div class="row" style="text-align: center; margin: auto;padding-top: 20px;"><div class="col-xs-1"></div><div class="col-xs-5"><img style="padding-bottom: 15px; max-width: 190px;" src="codegeass.jpg"></div>',
@@ -33,7 +39,6 @@ $(function() {
   ].join(''));
 
   // when both graph export json and style loaded, init cy
-  Promise.all([graphP, styleP]).then(initCy);
 
   var allNodes = null;
   var allEles = null;
@@ -227,6 +232,7 @@ $(function() {
   }
 
   function showNodeInfo(node) {
+    console.dir(node.data());
     $('#info').html(infoTemplate(node.data())).show();
   }
 
@@ -308,77 +314,112 @@ $(function() {
 
   }
 
-  var lastSearch = '';
-
-  $('#search').typeahead({
-    minLength: 2,
-    highlight: true,
-  }, {
-    name: 'search-dataset',
-    source: function(query, cb) {
-      function matches(str, q) {
-        str = (str || '').toLowerCase();
-        q = (q || '').toLowerCase();
-
-        return str.match(q);
-      }
-
-      var fields = ['name', 'NodeType', 'Country', 'Type', 'Milk'];
-
-      function anyFieldMatches(n) {
-        for (var i = 0; i < fields.length; i++) {
-          var f = fields[i];
-
-          if (matches(n.data(f), query)) {
-            return true;
-          }
-        }
-
-        return false;
-      }
-
-      function getData(n) {
-        var data = n.data();
-
-        return data;
-      }
-
-      function sortByName(n1, n2) {
-        if (n1.data('name') < n2.data('name')) {
-          return -1;
-        } else if (n1.data('name') > n2.data('name')) {
-          return 1;
-        }
-
-        return 0;
-      }
-
-      var res = allNodes.stdFilter(anyFieldMatches).sort(sortByName).map(getData);
-
-      cb(res);
-    },
-    templates: {
-      suggestion: infoTemplate
-    }
-  }).on('typeahead:selected', function(e, entry, dataset) {
-    var n = cy.getElementById(entry.id);
-
-    cy.batch(function() {
-      allNodes.unselect();
-
-      n.select();
+  function LoadRecs() {
+    console.dir(keywordList);
+    console.dir(genreList);
+    var promises = keywordSearch();
+    //const combined = [];
+    Object.keys(keywordList).forEach((key) => {
+      combined.push(keywordList[key])
+    });
+    Object.keys(genreList).forEach((key) => {
+      combined.push(genreList[key])
     });
 
-    showNodeInfo(n);
-  }).on('keydown keypress keyup change', _.debounce(function(e) {
-    var thisSearch = $('#search').val();
+    const recNodes = [];
+    const basisNodes = [];
+    const edges = [];
+    const moviePromises = [styleP];
+    //console.dir(combined);
+    //console.log(styleP);
 
-    if (thisSearch !== lastSearch) {
-      $('.tt-dropdown-menu').scrollTop(0);
+    Promise.all(promises).then((results) => {
+      for (i = 0; i < results.length; i++) {
+        const result = results[i];
+        const basis = combined[i].basis;
+        result.forEach((d) => {
+          const getMovieURL = 'getMovie/' + d
+          const k = i;
+          moviePromises.push($.get(getMovieURL, (title) => {
+            if (!recommendations[title.id]) {
+              recommendations[title.id] = title;
+            }
+            if (!recommendations[title.id].basis) {
+              recommendations[title.id].basis = [];
+            }
+            combined[k].basis.forEach((basis) => {
+              recommendations[title.id].basis.push(basis);
+            });
+          }));
+        });
+      }
+      console.dir(moviePromises);
 
-      lastSearch = thisSearch;
-    }
-  }, 50));
+      Promise.all(moviePromises).then(changeData);
+
+      function changeData(then) {
+        var graphPRes = {
+          elements: {
+            nodes: [],
+            edges: []
+          }
+        };
+
+        //then.forEach((movie)=>{
+        //  movie.basis = recommendations[movie.id].basis;
+        //});
+
+        const basisList = {};
+        var i = 500;
+        var basis_pos = 1000;
+        Object.keys(recommendations).forEach((movieID) => {
+          //for (i = 1; i < then.length; i++) {
+          var movieRec = recommendations[movieID];
+          graphPRes.elements.nodes.push({
+            data: {
+              id: movieRec.id,
+              name: movieRec.title,
+              NodeType: 'movie',
+            },
+            position: {
+              x: 1000,
+              y: (i),
+            }
+          });
+          i = i + 50
+          movieRec.basis.forEach((basis) => {
+            if (!basisList[basis]) {
+              graphPRes.elements.nodes.push({
+                data: {
+                  id: basis,
+                  name: favorites[basis].title,
+                  NodeType: 'basis',
+                },
+                position: {
+                  x: 500,
+                  y: basis_pos,
+                }
+              });
+              basis_pos += 100;
+            }
+            graphPRes.elements.edges.push({
+              data: {
+                id: 's' + movieRec.id + 't' + basis,
+                source: movieRec.id,
+                target: basis,
+              },
+
+            });
+          });
+
+        });
+        console.dir(then[0]);
+
+        var stylePRes = then[0];
+        initCy([graphPRes, stylePRes])
+      }
+    });
+  }
 
   $('#reset').on('click', function() {
     if (isDirty()) {
@@ -401,148 +442,221 @@ $(function() {
     }
   });
 
-  $('#filters').on('click', 'input', function() {
+  var lastSearch = '';
+  /*
+    $('#search').typeahead({
+      minLength: 2,
+      highlight: true,
+    }, {
+      name: 'search-dataset',
+      source: function(query, cb) {
+        function matches(str, q) {
+          str = (str || '').toLowerCase();
+          q = (q || '').toLowerCase();
 
-    var soft = $('#soft').is(':checked');
-    var semiSoft = $('#semi-soft').is(':checked');
-    var na = $('#na').is(':checked');
-    var semiHard = $('#semi-hard').is(':checked');
-    var hard = $('#hard').is(':checked');
-
-    var red = $('#red').is(':checked');
-    var white = $('#white').is(':checked');
-    var cider = $('#cider').is(':checked');
-
-    var england = $('#chs-en').is(':checked');
-    var france = $('#chs-fr').is(':checked');
-    var italy = $('#chs-it').is(':checked');
-    var usa = $('#chs-usa').is(':checked');
-    var spain = $('#chs-es').is(':checked');
-    var switzerland = $('#chs-ch').is(':checked');
-    var euro = $('#chs-euro').is(':checked');
-    var newWorld = $('#chs-nworld').is(':checked');
-    var naCountry = $('#chs-na').is(':checked');
-
-    cy.batch(function() {
-
-      allNodes.forEach(function(n) {
-        var type = n.data('NodeType');
-
-        n.removeClass('filtered');
-
-        var filter = function() {
-          n.addClass('filtered');
-        };
-
-        if (type === 'Cheese' || type === 'CheeseType') {
-
-          var cType = n.data('Type');
-          var cty = n.data('Country');
-
-          if (
-            // moisture
-            (cType === 'Soft' && !soft) ||
-            (cType === 'Semi-soft' && !semiSoft) ||
-            (cType === undefined && !na) ||
-            (cType === 'Semi-hard' && !semiHard) ||
-            (cType === 'Hard' && !hard)
-
-            // country
-            ||
-            (cty === 'England' && !england) ||
-            (cty === 'France' && !france) ||
-            (cty === 'Italy' && !italy) ||
-            (cty === 'US' && !usa) ||
-            (cty === 'Spain' && !spain) ||
-            (cty === 'Switzerland' && !switzerland) ||
-            ((cty === 'Holland' || cty === 'Ireland' || cty === 'Portugal' || cty === 'Scotland' || cty === 'Wales') && !euro) ||
-            ((cty === 'Canada' || cty === 'Australia') && !newWorld) ||
-            (cty === undefined && !naCountry)
-          ) {
-            filter();
-          }
-
-        } else if (type === 'RedWine') {
-
-          if (!red) {
-            filter();
-          }
-
-        } else if (type === 'WhiteWine') {
-
-          if (!white) {
-            filter();
-          }
-
-        } else if (type === 'Cider') {
-
-          if (!cider) {
-            filter();
-          }
-
+          return str.match(q);
         }
+
+        var fields = ['name', 'NodeType', 'Country', 'Type', 'Milk'];
+
+        function anyFieldMatches(n) {
+          for (var i = 0; i < fields.length; i++) {
+            var f = fields[i];
+
+            if (matches(n.data(f), query)) {
+              return true;
+            }
+          }
+
+          return false;
+        }
+
+        function getData(n) {
+          var data = n.data();
+
+          return data;
+        }
+
+        function sortByName(n1, n2) {
+          if (n1.data('name') < n2.data('name')) {
+            return -1;
+          } else if (n1.data('name') > n2.data('name')) {
+            return 1;
+          }
+
+          return 0;
+        }
+
+        var res = allNodes.stdFilter(anyFieldMatches).sort(sortByName).map(getData);
+
+        cb(res);
+      },
+      templates: {
+        suggestion: infoTemplate
+      }
+    }).on('typeahead:selected', function(e, entry, dataset) {
+      var n = cy.getElementById(entry.id);
+
+      cy.batch(function() {
+        allNodes.unselect();
+
+        n.select();
+      });
+
+      showNodeInfo(n);
+    }).on('keydown keypress keyup change', _.debounce(function(e) {
+      var thisSearch = $('#search').val();
+
+      if (thisSearch !== lastSearch) {
+        $('.tt-dropdown-menu').scrollTop(0);
+
+        lastSearch = thisSearch;
+      }
+    }, 50));
+  */
+  /*
+    $('#filters').on('click', 'input', function() {
+
+      var soft = $('#soft').is(':checked');
+      var semiSoft = $('#semi-soft').is(':checked');
+      var na = $('#na').is(':checked');
+      var semiHard = $('#semi-hard').is(':checked');
+      var hard = $('#hard').is(':checked');
+
+      var red = $('#red').is(':checked');
+      var white = $('#white').is(':checked');
+      var cider = $('#cider').is(':checked');
+
+      var england = $('#chs-en').is(':checked');
+      var france = $('#chs-fr').is(':checked');
+      var italy = $('#chs-it').is(':checked');
+      var usa = $('#chs-usa').is(':checked');
+      var spain = $('#chs-es').is(':checked');
+      var switzerland = $('#chs-ch').is(':checked');
+      var euro = $('#chs-euro').is(':checked');
+      var newWorld = $('#chs-nworld').is(':checked');
+      var naCountry = $('#chs-na').is(':checked');
+
+      cy.batch(function() {
+
+        allNodes.forEach(function(n) {
+          var type = n.data('NodeType');
+
+          n.removeClass('filtered');
+
+          var filter = function() {
+            n.addClass('filtered');
+          };
+
+          if (type === 'Cheese' || type === 'CheeseType') {
+
+            var cType = n.data('Type');
+            var cty = n.data('Country');
+
+            if (
+              // moisture
+              (cType === 'Soft' && !soft) ||
+              (cType === 'Semi-soft' && !semiSoft) ||
+              (cType === undefined && !na) ||
+              (cType === 'Semi-hard' && !semiHard) ||
+              (cType === 'Hard' && !hard)
+
+              // country
+              ||
+              (cty === 'England' && !england) ||
+              (cty === 'France' && !france) ||
+              (cty === 'Italy' && !italy) ||
+              (cty === 'US' && !usa) ||
+              (cty === 'Spain' && !spain) ||
+              (cty === 'Switzerland' && !switzerland) ||
+              ((cty === 'Holland' || cty === 'Ireland' || cty === 'Portugal' || cty === 'Scotland' || cty === 'Wales') && !euro) ||
+              ((cty === 'Canada' || cty === 'Australia') && !newWorld) ||
+              (cty === undefined && !naCountry)
+            ) {
+              filter();
+            }
+
+          } else if (type === 'RedWine') {
+
+            if (!red) {
+              filter();
+            }
+
+          } else if (type === 'WhiteWine') {
+
+            if (!white) {
+              filter();
+            }
+
+          } else if (type === 'Cider') {
+
+            if (!cider) {
+              filter();
+            }
+
+          }
+
+        });
 
       });
 
     });
 
-  });
-
-  $('#filter').qtip({
-    position: {
-      my: 'top center',
-      at: 'bottom center',
-      adjust: {
-        method: 'shift'
+    $('#filter').qtip({
+      position: {
+        my: 'top center',
+        at: 'bottom center',
+        adjust: {
+          method: 'shift'
+        },
+        viewport: true
       },
-      viewport: true
-    },
 
-    show: {
-      event: 'click'
-    },
-
-    hide: {
-      event: 'unfocus'
-    },
-
-    style: {
-      classes: 'qtip-bootstrap qtip-filters',
-      tip: {
-        width: 16,
-        height: 8
-      }
-    },
-
-    content: $('#filters')
-  });
-
-  $('#about').qtip({
-    position: {
-      my: 'bottom center',
-      at: 'top center',
-      adjust: {
-        method: 'shift'
+      show: {
+        event: 'click'
       },
-      viewport: true
-    },
 
-    show: {
-      event: 'click'
-    },
+      hide: {
+        event: 'unfocus'
+      },
 
-    hide: {
-      event: 'unfocus'
-    },
+      style: {
+        classes: 'qtip-bootstrap qtip-filters',
+        tip: {
+          width: 16,
+          height: 8
+        }
+      },
 
-    style: {
-      classes: 'qtip-bootstrap qtip-about',
-      tip: {
-        width: 16,
-        height: 8
-      }
-    },
+      content: $('#filters')
+    });
 
-    content: $('#about-content')
-  });
+    $('#about').qtip({
+      position: {
+        my: 'bottom center',
+        at: 'top center',
+        adjust: {
+          method: 'shift'
+        },
+        viewport: true
+      },
+
+      show: {
+        event: 'click'
+      },
+
+      hide: {
+        event: 'unfocus'
+      },
+
+      style: {
+        classes: 'qtip-bootstrap qtip-about',
+        tip: {
+          width: 16,
+          height: 8
+        }
+      },
+
+      content: $('#about-content')
+    });*/
 });
