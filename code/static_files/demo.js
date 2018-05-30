@@ -34,7 +34,7 @@ $(function() {
   var infoTemplate = Handlebars.compile([
     '<center class="ac-name">{{title}}</center>',
     '<div class="row" style="text-align: center; margin: auto;padding-top: 20px;"><div class="col-xs-1"></div><div class="col-xs-5">',
-    '{{#if poster_path}}<img style="padding-bottom: 15px; max-width: 190px;" src="codegeass.jpg"></div>{{/if}}',
+    '{{#if poster_path}}<img style="padding-bottom: 15px; max-width: 190px;" src=http://image.tmdb.org/t/p/w185/{{poster_path}}></div>{{/if}}',
     '<div> {{overview}}</div>',
     '<div class="col-xs-5">{{#if Milk}}<p class="ac-milk"> {{Milk}}</p>{{/if}}</div><div class="col-xs-1"></div></div>',
     '{{#if Country}}<center class="ac-country"><i class="fa fa-map-marker"></i> {{Country}}</center>{{/if}}',
