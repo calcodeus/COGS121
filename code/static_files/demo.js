@@ -32,8 +32,10 @@ $(function() {
   LoadRecs();
 
   var infoTemplate = Handlebars.compile([
-    '<center class="ac-name">{{name}}</center>',
-    '<div class="row" style="text-align: center; margin: auto;padding-top: 20px;"><div class="col-xs-1"></div><div class="col-xs-5"><img style="padding-bottom: 15px; max-width: 190px;" src="codegeass.jpg"></div>',
+    '<center class="ac-name">{{title}}</center>',
+    '<div class="row" style="text-align: center; margin: auto;padding-top: 20px;"><div class="col-xs-1"></div><div class="col-xs-5">',
+    '{{#if poster_path}}<img style="padding-bottom: 15px; max-width: 190px;" src="codegeass.jpg"></div>{{/if}}',
+    '<div> {{overview}}</div>',
     '<div class="col-xs-5">{{#if Milk}}<p class="ac-milk"> {{Milk}}</p>{{/if}}</div><div class="col-xs-1"></div></div>',
     '{{#if Country}}<center class="ac-country"><i class="fa fa-map-marker"></i> {{Country}}</center>{{/if}}',
   ].join(''));
@@ -232,8 +234,12 @@ $(function() {
   }
 
   function showNodeInfo(node) {
-    console.dir(node.data());
-    $('#info').html(infoTemplate(node.data())).show();
+    if (node.data().NodeType == 'basis'){
+      console.log(favorites[node.data().id]);
+      $('#info').html(infoTemplate(favorites[node.data().id])).show();
+    } else {
+      $('#info').html(infoTemplate(recommendations[node.data().id])).show();
+    }
   }
 
   function hideNodeInfo() {
@@ -408,7 +414,6 @@ $(function() {
                 source: movieRec.id,
                 target: basis,
               },
-
             });
           });
 
