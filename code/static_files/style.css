@@ -130,9 +130,9 @@ body.calc #loading {
   margin: 1em;
   padding: 15px;
   /*background: #bbdbf7;*/
-  background: #fff;
+  background: #000;
   border: 1px solid #ccc;
-  box-shadow: inset 0 0 0 0.25em rgba(187, 219, 247, 0.9);
+  /* box-shadow: inset 0 0 0 0.25em rgba(187, 219, 247, 0.9); */
   width: 40%;
   display: none;
 }
