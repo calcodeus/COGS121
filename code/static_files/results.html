@@ -77,99 +77,33 @@ http://localhost:3000/petsapp.html
       return defList;
     }
 
-    function fakeRecs() {
-      let i = 0;
-      while (i < 30) {
-        i = i + 1;
-        if (i >= Object.keys(favorites).length) {
-          console.log('not enough favorites!');
-          break;
-        }
-        favorites[Object.keys(favorites)[i]].keyword_ids.forEach((kid) => {
-
-          const requestURL = 'recommend/Keyword/' + kid;
-          //console.log('hitting: ' + requestURL);
-          $.get(requestURL, (data) => {
-            if (data != []) {
-              //console.log(data);
-            }
-            data.forEach((d) => {
-              const getMovieURL = 'getMovie/' + d;
-              const recList = [];
-              $.get(getMovieURL, (title) => {
-                if (!recommendations[title.id]) {
-                  recommendations[title.id] = title;
-                  recList.push(title);
-                  sessionStorage.recList = JSON.stringify(recList);
-                  const loc = recList.length - 1;
-                  DisplayRec(title, loc);
-                }
-              });
-            });
-          });
-        });
-      }
-    }
-
-    function DisplayRec(title, number) {
-      return;
-      if(!title){
-        console.log('shits broke');
-      }
-      if (!title.poster_path){
-        console.log('no poster for obj');
-        console.dir(title);
-
-      }
-      let resultsField = '';
-      const name = title.title;
-      //console.log(name);
-      const poster = title.poster_path;
-      const pre = '<div class="col-sm-4" style="text-align:center; padding-bottom: 30px;"><img class="poster" src=http://image.tmdb.org/t/p/w185/';
-      const mid = ' alt=""><br><a href="mediaPage.html#' + number + '">';
-      const post = '</a></div><br>';
-      resultsField += pre + poster + mid + name + post;
-      let resultDiv = document.getElementById('results');
-
-      resultDiv.insertAdjacentHTML('beforeend', resultsField);
-    }
-
-
     function SetupLists(favs) {
       //console.log(typeof favs);
-      Object.keys(favs).forEach((fv) => {
-        //console.log(favs[fv]);
-        favs[fv].genre_ids.forEach((gi) => {
+      console.dir(favs);
+      Object.keys(favs).forEach((id) => {
+        const favorite = favs[id];
+        favorite.genre_ids.forEach((gi) => {
           if (!genreList[gi]) {
-            genreList[gi] = {}
+            genreList[gi] = {
+              id: gi,
+              score: 0,
+              basis: []
+            }
           }
-          const gscore = genreList[gi].score;
-          if (!gscore) {
-            genreList[gi].score = 1;
-          } else {
-            genreList[gi].score = gscore + 1;
-          }
-          if (!genreList[gi].basis) {
-            genreList[gi].basis = [fv];
-          } else {
-            genreList[gi].basis.push(fv);
-          }
+          genreList[gi].score += 1;
+          genreList[gi].basis.push(id);
         });
-        favs[fv].keyword_ids.forEach((ki) => {
-          if (!keywordList[ki]) {
-            keywordList[ki] = {}
+        favorite.keyword_ids.forEach((ki) => {
+          if (!keywordList[ki.id]) {
+            keywordList[ki.id] = {
+              id: ki.id,
+              name: ki.name,
+              score: 0,
+              basis: []
+            }
           }
-          const kscore = keywordList[ki].score;
-          if (!kscore) {
-            keywordList[ki].score = 1;
-          } else {
-            keywordList[ki].score = kscore + 1;
-          }
-          if (!keywordList[ki].basis) {
-            keywordList[ki].basis = [fv];
-          } else {
-            keywordList[ki].basis.push(fv);
-          }
+          keywordList[ki.id].score += 1;
+          keywordList[ki.id].basis.push(id);
         });
       });
       //console.dir(keywordList);
@@ -181,7 +115,6 @@ http://localhost:3000/petsapp.html
       //console.log('favorites: ');
       //console.log(typeof favorites);
       //console.dir(favorites);
-      //fakeRecs();
       $('#next').click(() => {
         //LoadRecs();
       });

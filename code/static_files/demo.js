@@ -33,6 +33,7 @@ $(function() {
 
   var infoTemplate = Handlebars.compile([
     '<center class="ac-name">{{title}}</center>',
+    '<center class="ac-name">{{id}}{{#if score}}: {{score}}{{/if}}</center>',
     '<div class="row" style="text-align: center; margin: auto;padding-top: 20px;"><div class="col-xs-1"></div><div class="col-xs-5">',
     '{{#if poster_path}}<img style="padding-bottom: 15px; max-width: 190px;" src=http://image.tmdb.org/t/p/w185/{{poster_path}}></div>{{/if}}',
     '<div> {{overview}}</div>',
@@ -234,11 +235,21 @@ $(function() {
   }
 
   function showNodeInfo(node) {
-    if (node.data().NodeType == 'basis'){
-      console.log(favorites[node.data().id]);
-      $('#info').html(infoTemplate(favorites[node.data().id])).show();
+    const id = node.data().id;
+    if (node.data().NodeType == 'basis') {
+      const data = favorites[id];
+      $('#info').html(infoTemplate(data)).show();
+      console.log('id: ' + id);
+      console.dir(data.keyword_ids);
+      console.dir(data.genre_ids);
+      console.dir(data);
     } else {
-      $('#info').html(infoTemplate(recommendations[node.data().id])).show();
+      const data = recommendations[id];
+      $('#info').html(infoTemplate(data)).show();
+      console.log('id: ' + id);
+      console.dir(data.keyword_ids);
+      console.dir(data.genre_ids);
+      console.dir(data);
     }
   }
 
@@ -342,24 +353,32 @@ $(function() {
     Promise.all(promises).then((results) => {
       for (i = 0; i < results.length; i++) {
         const result = results[i];
-        const basis = combined[i].basis;
         result.forEach((d) => {
           const getMovieURL = 'getMovie/' + d
           const k = i;
           moviePromises.push($.get(getMovieURL, (title) => {
             if (!recommendations[title.id]) {
               recommendations[title.id] = title;
+              recommendations[title.id].keyword_ids = {};
+              recommendations[title.id].genre_ids = {};
+              recommendations[title.id].basis = {};
+              recommendations[title.id].score = 0;
             }
-            if (!recommendations[title.id].basis) {
-              recommendations[title.id].basis = [];
+
+            if (keywordList[combined[k].id]) {
+              recommendations[title.id].keyword_ids[combined[k].id] = combined[k];
+              recommendations[title.id].score += keywordList[combined[k].id].score*5;
+            } else if (genreList[combined[k].id]) {
+              recommendations[title.id].genre_ids[combined[k].id] = combined[k];
+              recommendations[title.id].score += genreList[combined[k].id].score;
             }
             combined[k].basis.forEach((basis) => {
-              recommendations[title.id].basis.push(basis);
+              recommendations[title.id].basis[basis] = basis;
             });
           }));
         });
       }
-      console.dir(moviePromises);
+      //console.dir(moviePromises);
 
       Promise.all(moviePromises).then(changeData);
 
@@ -375,12 +394,23 @@ $(function() {
         //  movie.basis = recommendations[movie.id].basis;
         //});
 
+        let recList = Object.keys(recommendations).map((k) => {
+          return recommendations[k]
+        });
+        recList.sort((a, b) => {
+          return b.score - a.score;
+        });
+        const goodRecs = [];
+        for (index = 0; index < 10; index++) {
+          goodRecs.push(recList[index]);
+        }
+
         const basisList = {};
-        var i = 500;
-        var basis_pos = 1000;
-        Object.keys(recommendations).forEach((movieID) => {
+        var node_pos = 500;
+        var basis_pos = 500;
+        goodRecs.forEach((movieRec) => {
           //for (i = 1; i < then.length; i++) {
-          var movieRec = recommendations[movieID];
+          //var movieRec = recommendations[movieID];
           graphPRes.elements.nodes.push({
             data: {
               id: movieRec.id,
@@ -389,11 +419,12 @@ $(function() {
             },
             position: {
               x: 1000,
-              y: (i),
+              y: (node_pos),
             }
           });
-          i = i + 50
-          movieRec.basis.forEach((basis) => {
+          node_pos += 50
+          Object.keys(movieRec.basis).forEach((key) => {
+            const basis = movieRec.basis[key];
             if (!basisList[basis]) {
               graphPRes.elements.nodes.push({
                 data: {
@@ -407,6 +438,10 @@ $(function() {
                 }
               });
               basis_pos += 100;
+              basisList[basis] = basis;
+            }
+            if (basis == "13156"){
+              console.log("second hand lions rec: " + movieRec.title);
             }
             graphPRes.elements.edges.push({
               data: {

@@ -28,6 +28,11 @@ function titleToSchema(title) {
   if (!title.keywords) {
     title.keywords = [];
   }
+  if (title.genres) {
+    title.genre_ids = title.genres.map((genres) => {
+      genre.id;
+    });
+  }
   var t1 = new Title({
     id: title.id,
     poster_path: title.poster_path,
@@ -96,7 +101,6 @@ request({
           console.log(err1);
           return;
         }
-        console.log(body);
         const results = JSON.parse(body);
         const results1 = JSON.parse(body1);
         results.genres.forEach((genre) => {
@@ -105,9 +109,9 @@ request({
         results1.genres.forEach((genre) => {
           genres[genre.id] = genre.name;
         });
-        //Object.keys(genres).forEach((gid) => {
-        //  cacheNpages(gid, genres[gid], 1, 20)
-        //});
+          Object.keys(genres).forEach((id)=>{
+            console.log('id: ' + id + " name: " + genres[id]);
+          });
       });
   });
 
