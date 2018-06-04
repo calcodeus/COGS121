@@ -401,15 +401,15 @@ $(function() {
 
             if (keywordList[combined[k].id]) {
               recommendations[title.id].keyword_ids[combined[k].id] = combined[k];
-              recommendations[title.id].score += keywordList[combined[k].id].score * 5;
+              recommendations[title.id].score += keywordList[combined[k].id].score;
 
             } else if (genreList[combined[k].id]) {
               recommendations[title.id].genre_ids[combined[k].id] = combined[k];
-              recommendations[title.id].score += genreList[combined[k].id].score;
+              //recommendations[title.id].score += genreList[combined[k].id].score;
             }
             combined[k].basis.forEach((basis) => {
-              recommendations[title.id].basis[basis] = basis;
               if (keywordList[combined[k].id]) {
+                recommendations[title.id].basis[basis] = basis;
                 recommendations[title.id].keywordBasis.push(basis);
               }
             });
@@ -494,12 +494,68 @@ $(function() {
         });
         console.dir(then[0]);
 
+        const numBasis = Object.keys(basisList).length;
+        const centerX = 1000;
+        const centerY = 1000;
+        const diameter1 = 1000;
+        let bki = 0;
+        let degreesPer = 360 / numBasis;
+        console.log("Basis pos:");
+        Object.keys(basisList).forEach((bkey) => {
+          const basisNode = basisList[bkey];
+          const angle = degreesPer * bki;
+          let temp = angle_to_pos(angle, diameter1);
+          let posx = temp.mX + centerX;
+          let posy = temp.mY + centerY;
+          basisNode.position.x = posx;
+          basisNode.position.y = posy;
+          console.log(posx + ", " + posy)
+          bki++;
+        });
+        const numNodes = goodRecs.length;
+        degreesPer = 360 / numNodes;
+        diameter2 = 500;
+        let nki = 0
+        console.log("Rec pos:");
 
+        graphPRes.elements.nodes.forEach((node) => {
+          if (node.data.NodeType != "basis") {
+            let xpos = centerX;
+            let ypos = centerY;
+            const basisKeys = Object.keys(recommendations[node.data.id].basis);
+            basisKeys.forEach((basisKey) => {
+              xpos = xpos + basisList[basisKey].position.x;
+              ypos = ypos + basisList[basisKey].position.y;
+            });
+            xpos = xpos/(basisKeys.length + 1);
+            ypos = ypos/(basisKeys.length + 1);
+            node.position.x = xpos;
+            node.position.y = ypos;
+          } else {
+            console.log('skip');
+          }
+        });
+
+        graphPRes.elements.nodes.forEach((node) => {
+          console.log("position: " + node.position.x + ", " + node.position.y);
+        });
 
         var stylePRes = then[0];
         initCy([graphPRes, stylePRes])
       }
     });
+  }
+
+  function angle_to_pos(deg, diameter) {
+    const rad = Math.PI * deg / 180;
+    const r = diameter / 2
+    const x = r * Math.cos(rad);
+    const y = r * Math.sin(rad);
+    const temp = {
+      mX: x,
+      mY: y
+    }
+    return temp;
   }
 
   $('#reset').on('click', function() {
