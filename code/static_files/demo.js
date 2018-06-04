@@ -63,8 +63,8 @@ $(function() {
   var infoTemplate = Handlebars.compile([
     '<center class="ac-name" style="color: fff"> {{title}} </center>',
     '<div class="row" style="text-align: center; margin: auto;padding-top: 20px;"><div class="col-xs-1"></div><div class="col-xs-5">',
-    '{{#if poster_path}}<img style="padding-bottom: 15px; max-width: 190px;" src=http://image.tmdb.org/t/p/w185/{{poster_path}}></div>{{/if}}',
-    '<div class="col-xs-5"> <p style="color: #fff" >{{overview}}</p></div>',
+    '{{#if poster_path}}<img class="poster" src=http://image.tmdb.org/t/p/w185/{{poster_path}}></div>{{/if}}',
+    '<div class="col-xs-5"> <p class="description">{{overview}}</p></div>',
     '<div class="col-xs-1"></div></div>',
     '{{#if isRec}}<button onClick="addBookmark({{id}})">add</button>{{/if}}'
 
@@ -464,7 +464,7 @@ $(function() {
           Object.keys(movieRec.basis).forEach((key) => {
             const basis = movieRec.basis[key];
             if (!basisList[basis]) {
-              graphPRes.elements.nodes.push({
+              const basisNode = {
                 data: {
                   id: basis,
                   name: favorites[basis].title,
@@ -474,9 +474,10 @@ $(function() {
                   x: 500,
                   y: basis_pos,
                 }
-              });
+              }
+              graphPRes.elements.nodes.push(basisNode);
               basis_pos += 100;
-              basisList[basis] = basis;
+              basisList[basis] = basisNode;
             }
             if (basis == "13156") {
               console.log("second hand lions rec: " + movieRec.title);
@@ -492,6 +493,8 @@ $(function() {
 
         });
         console.dir(then[0]);
+
+
 
         var stylePRes = then[0];
         initCy([graphPRes, stylePRes])

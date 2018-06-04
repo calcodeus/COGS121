@@ -223,43 +223,44 @@
 </head>
 
 <body style="background-color: #000;">
-  <center style="padding-top: 3vh;">
-    <a href="homepage.html">
-      <button><i class="fas fa-home"></i></button>
-    </a>
-    <a href="favorites.html">
-      <button><i class="fas fa-star"></i></button>
-    </a>
-  </center>
 
   <!-- <div id="results"> -->
 
+  <center style="position: relative;">
+    <h1 style="color: #fff; position: relative;">Recommendations</h1>
+    <a href="homepage.html" class="btn btn-default" style="width: 3em;margin: 0.5em;position: relative; padding: 6px 12px; color: #000"><i class="fas fa-home"></i></a>
+    <a href="favorites.html" class="btn btn-default" style="width: 3em;margin: 0.5em;position: relative; padding: 6px 12px; color: #000"><i class="fas fa-star"></i></a>
+    <button id="reset" class="btn btn-default" style="width: 3em;margin: 0.5em;position: relative; padding: 6px 12px; color: #000"><i class="fa fa-arrows-h"></i></button>
+  </center>
+
   <div class="row">
     <!-- <div class="col-md-6"> -->
-    <div id="cy"></div>
     <div id="loading">
       <span class="fa fa-refresh fa-spin"></span>
     </div>
 
-    <div id="info"></div>
-    <div id="bookmarks" style="display: block"></div>
+    <div class="column" style="width: 35%">
+      <div id="info"></div>
+      <div id="bookmarks" style="display: block">
+        <center>
+          <h2 style="color: #fff; position: relative;">Bookmarks</h1>
+        </center>
+      </div>
+    </div>
+    <div class="column" style="min-width: 65%; max-width:100%; max-height:100%">
+      <div id="cy"></div>
+    </div>
+
+
+
 
     <!-- </div> -->
   </div>
 
 
 
-  <center style="position: absolute; left: 50%; top: -1.5%;">
-    <h1 style="color: #fff; position: relative; left: -50%; z-index: 9999;">Recommendations</h1>
-    <a href="homepage.html">
-      <button class="btn btn-default"style="width: 3em;margin: 0.5em; position: relative;left: -50%;padding: 6px 12px; color: #000"><i class="fas fa-home"></i></button>
-    </a>
-    <a href="favorites.html">
-      <button class="btn btn-default"style="width: 3em;margin: 0.5em;position: relative;left: -50%; padding: 6px 12px; color: #000"><i class="fas fa-star"></i></button>
-    </a>
-  </center>
 
-  <button id="reset" class="btn btn-default"><i class="fa fa-arrows-h"></i></button>
+
 
   <script>
     (function(i, s, o, g, r, a, m) {
