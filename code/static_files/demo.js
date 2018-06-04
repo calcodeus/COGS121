@@ -361,18 +361,23 @@ $(function() {
               recommendations[title.id].keyword_ids = {};
               recommendations[title.id].genre_ids = {};
               recommendations[title.id].basis = {};
+              recommendations[title.id].keywordBasis = [];
               recommendations[title.id].score = 0;
             }
 
             if (keywordList[combined[k].id]) {
               recommendations[title.id].keyword_ids[combined[k].id] = combined[k];
-              recommendations[title.id].score += keywordList[combined[k].id].score*5;
+              recommendations[title.id].score += keywordList[combined[k].id].score * 5;
+
             } else if (genreList[combined[k].id]) {
               recommendations[title.id].genre_ids[combined[k].id] = combined[k];
               recommendations[title.id].score += genreList[combined[k].id].score;
             }
             combined[k].basis.forEach((basis) => {
               recommendations[title.id].basis[basis] = basis;
+              if (keywordList[combined[k].id]) {
+                recommendations[title.id].keywordBasis.push(basis);
+              }
             });
           }));
         });
@@ -439,7 +444,7 @@ $(function() {
               basis_pos += 100;
               basisList[basis] = basis;
             }
-            if (basis == "13156"){
+            if (basis == "13156") {
               console.log("second hand lions rec: " + movieRec.title);
             }
             graphPRes.elements.edges.push({
