@@ -113,10 +113,10 @@ http://localhost:3000/petsapp.html
 
     function DisplayRec(title, number) {
       return;
-      if(!title){
+      if (!title) {
         console.log('shits broke');
       }
-      if (!title.poster_path){
+      if (!title.poster_path) {
         console.log('no poster for obj');
         console.dir(title);
 
@@ -243,7 +243,7 @@ http://localhost:3000/petsapp.html
   </style>
 </head>
 
-<body>
+<body style="background-color: #000;">
   <center style="padding-top: 3vh;">
     <a href="homepage.html">
       <button><i class="fas fa-home"></i></button>
@@ -255,16 +255,19 @@ http://localhost:3000/petsapp.html
 
   <!-- <div id="results"> -->
 
-  <div id="cy"></div>
-  <div id="loading">
-    <span class="fa fa-refresh fa-spin"></span>
-  </div>
+  <div class="row">
+    <!-- <div class="col-md-6"> -->
+    <div id="cy"></div>
+    <div id="loading">
+      <span class="fa fa-refresh fa-spin"></span>
+    </div>
+    <!-- </div> -->
 
-  <!-- <div id="search-wrapper">
+    <!-- <div id="search-wrapper">
     <input type="text" class="form-control" id="search" placeholder="&#xf002; Search">
   </div> -->
 
-  <!-- <center style="z-index: 9999; position: absolute;">
+    <!-- <center style="z-index: 9999; position: absolute;">
     <a href="homepage.html">
       <button style="width: 3em;margin: 0.5em;"><i class="fas fa-home"></i></button>
     </a>
@@ -273,8 +276,10 @@ http://localhost:3000/petsapp.html
     </a>
   </center> -->
 
-  <!-- details box that appears when you click on a node -->
-  <div id="info">,
+    <!-- details box that appears when you click on a node -->
+    <!-- <div class="col-md-6"> -->
+    <div id="info"></div>
+    <!-- </div> -->
   </div>
 
 
