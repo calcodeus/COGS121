@@ -32,19 +32,24 @@ $(function() {
   });
 
   addBookmark = function(id) {
-    bookmarks[id] = recommendations[id];
-    data = bookmarks[id];
-    const bookMarkDiv = document.getElementById('bookmarks');
-    resultDiv.insertAdjacentHTML('beforeend', '<span id="bookmark-span' + data.id + '">' + data.title + '&thinsp;' + '&thinsp;' +
-      '<button class="bookmark-del" id="' + data.id + '"><i class="fas fa-times"></i></button>' + '<br></span>');
-    $('#' + data.id).click((e) => {
-      removeFavorite(data.id);
-    });
-
-
-    console.log("bookmarked " + id);
+    if (!bookmarks[id]) {
+      bookmarks[id] = recommendations[id];
+      data = bookmarks[id];
+      const bookMarkDiv = document.getElementById('bookmarks');
+      bookMarkDiv.insertAdjacentHTML('beforeend', ['<span id="bookmark-span', data.id, '">',
+        data.title + '&thinsp;' + '&thinsp;',
+        '<button class="bookmark-del" id="' + data.id + '">',
+        '<i class="fas fa-times"></i></button>',
+        '<br></span>'
+      ].join(''));
+      $('#' + data.id).click((e) => {
+        removeFavorite(data.id);
+      });
+      console.log("bookmarked " + id);
+    } else {
+      console.log("already bookmarked " + id);
+    }
   }
-
 
   function removeBookmark(id) {
     if (bookmarks[id]) {
@@ -52,14 +57,6 @@ $(function() {
       $('#bookmark-span' + id).remove();
     }
   }
-
-  function displayFavorite(favData) {
-    let resultDiv = document.getElementById('favDiv');
-    resultDiv.insertAdjacentHTML('beforeend', '<span id="fav-span' + favData.id + '">' + favData.title + '&thinsp;' + '&thinsp;' +
-      '<button class="fav-del" id="' + favData.id + '"><i class="fas fa-times"></i></button>' + '<br></span>');
-    $('#' + favData.id).click((e) => {
-      removeFavorite(favData.id);
-    });
 
   LoadRecs();
 
@@ -353,12 +350,13 @@ $(function() {
 
       if (node.nonempty()) {
         showNodeInfo(node);
-
+        $('bookmarks').hide();
         Promise.resolve().then(function() {
           return highlight(node);
         });
       } else {
         hideNodeInfo();
+        $('bookmarks').show();
         clear();
       }
 
