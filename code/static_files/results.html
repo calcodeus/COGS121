@@ -65,6 +65,64 @@
       return defList;
     }
 
+    function fakeRecs() {
+      let i = 0;
+      while (i < 30) {
+        i = i + 1;
+        if (i >= Object.keys(favorites).length) {
+          console.log('not enough favorites!');
+          break;
+        }
+        favorites[Object.keys(favorites)[i]].keyword_ids.forEach((kid) => {
+
+          const requestURL = 'recommend/Keyword/' + kid;
+          //console.log('hitting: ' + requestURL);
+          $.get(requestURL, (data) => {
+            if (data != []) {
+              //console.log(data);
+            }
+            data.forEach((d) => {
+              const getMovieURL = 'getMovie/' + d;
+              const recList = [];
+              $.get(getMovieURL, (title) => {
+                if (!recommendations[title.id]) {
+                  recommendations[title.id] = title;
+                  recList.push(title);
+                  sessionStorage.recList = JSON.stringify(recList);
+                  const loc = recList.length - 1;
+                  DisplayRec(title, loc);
+                }
+              });
+            });
+          });
+        });
+      }
+    }
+
+    function DisplayRec(title, number) {
+      return;
+      if (!title) {
+        console.log('shits broke');
+      }
+      if (!title.poster_path) {
+        console.log('no poster for obj');
+        console.dir(title);
+
+      }
+      let resultsField = '';
+      const name = title.title;
+      //console.log(name);
+      const poster = title.poster_path;
+      const pre = '<div class="col-sm-4" style="text-align:center; padding-bottom: 30px;"><img class="poster" src=http://image.tmdb.org/t/p/w185/';
+      const mid = ' alt=""><br><a href="mediaPage.html#' + number + '">';
+      const post = '</a></div><br>';
+      resultsField += pre + poster + mid + name + post;
+      let resultDiv = document.getElementById('results');
+
+      resultDiv.insertAdjacentHTML('beforeend', resultsField);
+    }
+
+
     function SetupLists(favs) {
       //console.log(typeof favs);
       console.dir(favs);
@@ -164,7 +222,7 @@
   </style>
 </head>
 
-<body>
+<body style="background-color: #000;">
   <center style="padding-top: 3vh;">
     <a href="homepage.html">
       <button><i class="fas fa-home"></i></button>
@@ -176,16 +234,19 @@
 
   <!-- <div id="results"> -->
 
-  <div id="cy"></div>
-  <div id="loading">
-    <span class="fa fa-refresh fa-spin"></span>
-  </div>
+  <div class="row">
+    <!-- <div class="col-md-6"> -->
+    <div id="cy"></div>
+    <div id="loading">
+      <span class="fa fa-refresh fa-spin"></span>
+    </div>
+    <!-- </div> -->
 
-  <!-- <div id="search-wrapper">
+    <!-- <div id="search-wrapper">
     <input type="text" class="form-control" id="search" placeholder="&#xf002; Search">
   </div> -->
 
-  <!-- <center style="z-index: 9999; position: absolute;">
+    <!-- <center style="z-index: 9999; position: absolute;">
     <a href="homepage.html">
       <button style="width: 3em;margin: 0.5em;"><i class="fas fa-home"></i></button>
     </a>
@@ -194,8 +255,10 @@
     </a>
   </center> -->
 
-  <!-- details box that appears when you click on a node -->
-  <div id="info">,
+    <!-- details box that appears when you click on a node -->
+    <!-- <div class="col-md-6"> -->
+    <div id="info"></div>
+    <!-- </div> -->
   </div>
 
 
