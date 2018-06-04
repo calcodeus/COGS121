@@ -43,7 +43,7 @@ $(function() {
         '<br></span>'
       ].join(''));
       $('#' + data.id).click((e) => {
-        removeFavorite(data.id);
+        removeBookmark(data.id);
       });
       console.log("bookmarked " + id);
     } else {
