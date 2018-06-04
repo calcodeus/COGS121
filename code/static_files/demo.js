@@ -3,6 +3,8 @@ This demo visualises wine and cheese pairings.
 */
 
 $(function() {
+  const bookmarks = {};
+
   favorites = JSON.parse(localStorage.favorites);
 
   SetupLists(favorites);
@@ -29,6 +31,36 @@ $(function() {
     dataType: 'text'
   });
 
+  addBookmark = function(id) {
+    bookmarks[id] = recommendations[id];
+    data = bookmarks[id];
+    const bookMarkDiv = document.getElementById('bookmarks');
+    resultDiv.insertAdjacentHTML('beforeend', '<span id="bookmark-span' + data.id + '">' + data.title + '&thinsp;' + '&thinsp;' +
+      '<button class="bookmark-del" id="' + data.id + '"><i class="fas fa-times"></i></button>' + '<br></span>');
+    $('#' + data.id).click((e) => {
+      removeFavorite(data.id);
+    });
+
+
+    console.log("bookmarked " + id);
+  }
+
+
+  function removeBookmark(id) {
+    if (bookmarks[id]) {
+      delete bookmarks[id];
+      $('#bookmark-span' + id).remove();
+    }
+  }
+
+  function displayFavorite(favData) {
+    let resultDiv = document.getElementById('favDiv');
+    resultDiv.insertAdjacentHTML('beforeend', '<span id="fav-span' + favData.id + '">' + favData.title + '&thinsp;' + '&thinsp;' +
+      '<button class="fav-del" id="' + favData.id + '"><i class="fas fa-times"></i></button>' + '<br></span>');
+    $('#' + favData.id).click((e) => {
+      removeFavorite(favData.id);
+    });
+
   LoadRecs();
 
   var infoTemplate = Handlebars.compile([
@@ -37,10 +69,13 @@ $(function() {
     '{{#if poster_path}}<img style="padding-bottom: 15px; max-width: 190px;" src=http://image.tmdb.org/t/p/w185/{{poster_path}}></div>{{/if}}',
     '<div class="col-xs-5"> <p style="color: #fff" >{{overview}}</p></div>',
     '<div class="col-xs-1"></div></div>',
-    '{{#if Country}}<center class="ac-country"><i class="fa fa-map-marker"></i> {{Country}}</center>{{/if}}',
+    '{{#if isRec}}<button onClick="addBookmark({{id}})">add</button>{{/if}}'
+
   ].join(''));
 
+
   // when both graph export json and style loaded, init cy
+
 
   var allNodes = null;
   var allEles = null;
@@ -244,6 +279,7 @@ $(function() {
       console.dir(data);
     } else {
       const data = recommendations[id];
+      data.isRec = true;
       $('#info').html(infoTemplate(data)).show();
       console.log('id: ' + id);
       console.dir(data.keyword_ids);
