@@ -61,12 +61,12 @@ $(function() {
   LoadRecs();
 
   var infoTemplate = Handlebars.compile([
-    '<center class="ac-name" style="color: fff"> {{title}} </center>',
-    '<div class="row" style="text-align: center; margin: auto;padding-top: 20px;"><div class="col-xs-1"></div><div class="col-xs-5">',
+    '<center class="ac-name" style="color: #fff; padding-top: 20px;"> {{title}} </center>',
+    '<div class="row" style="text-align: center; margin: auto;padding-top: 30px;padding-bottom: 40px;"><div class="col-xs-1"></div><div class="col-xs-5">',
     '{{#if poster_path}}<img class="poster" src=http://image.tmdb.org/t/p/w185/{{poster_path}}></div>{{/if}}',
     '<div class="col-xs-5"> <p class="description">{{overview}}</p></div>',
     '<div class="col-xs-1"></div></div>',
-    '{{#if isRec}}<button onClick="addBookmark({{id}})">add</button>{{/if}}'
+    '{{#if isRec}}<center style="padding-bottom: 20px;"><button onClick="addBookmark({{id}})">add</button></center>{{/if}}'
 
   ].join(''));
 
@@ -519,9 +519,9 @@ $(function() {
               xpos = xpos + basisList[basisKey].position.x;
               ypos = ypos + basisList[basisKey].position.y;
             });
-            xpos = xpos/(basisKeys.length + 1);
-            ypos = ypos/(basisKeys.length + 1);
-            while (usedLocs[xpos + '' + ypos]){
+            xpos = xpos / (basisKeys.length + 1);
+            ypos = ypos / (basisKeys.length + 1);
+            while (usedLocs[xpos + '' + ypos]) {
               ypos = ypos + 50
             }
             usedLocs[xpos + '' + ypos] = 1;
