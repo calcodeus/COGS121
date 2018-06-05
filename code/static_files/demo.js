@@ -62,9 +62,9 @@ $(function() {
 
   var infoTemplate = Handlebars.compile([
     '<center class="ac-name" style="color: #fff; padding-top: 20px;"> {{title}} </center>',
-    '<div class="row" style="text-align: center; margin: auto;padding-top: 30px;padding-bottom: 40px;"><div class="col-xs-1"></div><div class="col-xs-5">',
-    '{{#if poster_path}}<img class="poster" src=http://image.tmdb.org/t/p/w185/{{poster_path}}></div>{{/if}}',
-    '<div class="col-xs-5"> <p class="description">{{overview}}</p></div>',
+    '<div class="row" style="margin: auto;padding-top: 30px;padding-bottom: 40px;"><div class="col-xs-1"></div><div>',
+    '{{#if poster_path}}<img class="poster" src=http://image.tmdb.org/t/p/w185/{{poster_path}}>{{/if}}',
+    '<p class="description">{{overview}}</p></div>',
     '<div class="col-xs-1"></div></div>',
     '{{#if isRec}}<center style="padding-bottom: 20px;"><button onClick="addBookmark({{id}})">add</button></center>{{/if}}'
 

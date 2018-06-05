@@ -166,8 +166,9 @@ body.calc #loading {
 }
 
 .poster{
+  float: right;
   padding-bottom: 15px;
-  max-width: 190px;
+  margin: 10px;
 }
 
 #linkout {
