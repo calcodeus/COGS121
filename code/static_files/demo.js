@@ -430,12 +430,17 @@ $(function() {
         let recList = Object.keys(recommendations).map((k) => {
           return recommendations[k]
         });
+        recList.forEach((rec) => {
+          console.log(rec.score);
+        });
         recList.sort((a, b) => {
           return b.score - a.score;
         });
         const goodRecs = [];
         for (index = 0; index < 10; index++) {
-          goodRecs.push(recList[index]);
+          if (recList[index]) {
+            goodRecs.push(recList[index]);
+          } else break;
         }
 
         const basisList = {};
@@ -519,9 +524,9 @@ $(function() {
               xpos = xpos + basisList[basisKey].position.x;
               ypos = ypos + basisList[basisKey].position.y;
             });
-            xpos = xpos/(basisKeys.length + 1);
-            ypos = ypos/(basisKeys.length + 1);
-            while (usedLocs[xpos + '' + ypos]){
+            xpos = xpos / (basisKeys.length + 1);
+            ypos = ypos / (basisKeys.length + 1);
+            while (usedLocs[xpos + '' + ypos]) {
               ypos = ypos + 50
             }
             usedLocs[xpos + '' + ypos] = 1;
