@@ -300,12 +300,6 @@ $(function() {
 
       data.NodeTypeFormatted = data.NodeType;
 
-      if (data.NodeTypeFormatted === 'RedWine') {
-        data.NodeTypeFormatted = 'Red Wine';
-      } else if (data.NodeTypeFormatted === 'WhiteWine') {
-        data.NodeTypeFormatted = 'White Wine';
-      }
-
       n.data.orgPos = {
         x: n.position.x,
         y: n.position.y
@@ -325,7 +319,8 @@ $(function() {
       motionBlur: true,
       selectionType: 'single',
       boxSelectionEnabled: false,
-      autoungrabify: true
+      autoungrabify: true,
+      avoidOverlap: true,
     });
 
     allNodes = cy.nodes();
@@ -497,7 +492,7 @@ $(function() {
         const numBasis = Object.keys(basisList).length;
         const centerX = 1000;
         const centerY = 1000;
-        const diameter1 = 1000;
+        const diameter1 = 750;
         let bki = 0;
         let degreesPer = 360 / numBasis;
         console.log("Basis pos:");
@@ -513,11 +508,8 @@ $(function() {
           bki++;
         });
         const numNodes = goodRecs.length;
-        degreesPer = 360 / numNodes;
-        diameter2 = 500;
-        let nki = 0
         console.log("Rec pos:");
-
+        const usedLocs = {};
         graphPRes.elements.nodes.forEach((node) => {
           if (node.data.NodeType != "basis") {
             let xpos = centerX;
@@ -529,6 +521,10 @@ $(function() {
             });
             xpos = xpos/(basisKeys.length + 1);
             ypos = ypos/(basisKeys.length + 1);
+            while (usedLocs[xpos + '' + ypos]){
+              ypos = ypos + 50
+            }
+            usedLocs[xpos + '' + ypos] = 1;
             node.position.x = xpos;
             node.position.y = ypos;
           } else {

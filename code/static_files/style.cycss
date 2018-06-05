@@ -42,8 +42,8 @@ node[NodeType = "rec"],
 node[NodeType = "show"],
 node[NodeType = "anime"],
 node[NodeType = "movie"] {
-	text-wrap: ellipsis;
-	text-max-width: 4;
+	text-wrap: wrap;
+	text-max-width: 200;
 	background-color: #FACD37;
 	text-outline-width: 0;
 	/*text-outline-color: #FACD37;*/
