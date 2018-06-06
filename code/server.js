@@ -1,3 +1,7 @@
+//manages requests from the client. Mostly acts as an
+//intermediary for the tmdb api and caches results of
+//api queries to minimize number of api calls needed.
+
 const express = require('express');
 const request = require('request');
 const mongo = require('mongodb');
@@ -24,6 +28,7 @@ var titleSchema = new Schema({
 
 var Title = mongoose.model('Title', titleSchema);
 
+//converts an object of the "title" format into a schema.
 function titleToSchema(title) {
   if (!title.keywords) {
     title.keywords = [];
@@ -81,7 +86,7 @@ const genreQueryObject = {
   api_key: TMDB_API_Key,
   language: 'en-US'
 };
-
+//get the list of genres. There's like 20 of them
 request({
     url: 'https://api.themoviedb.org/3/genre/movie/list?',
     qs: genreQueryObject
@@ -115,6 +120,8 @@ request({
       });
   });
 
+// caches a fixed number of pages from genres.
+// Only needed to run this once.
 function cacheNpages(id, name, i, n) {
   console.log('caching page ' + i);
   if (i > n) return;
@@ -158,6 +165,8 @@ app.get('/keywords/:type/:id', (req, res) => {
     });
 });
 
+// finds a movie or show by name. Returns list of possible
+// matches.
 app.get('/find/:searchName', (req, res) => {
   const query1 = req.params.searchName;
   const url = 'https://api.themoviedb.org/3/search/multi?'
@@ -191,7 +200,6 @@ app.get('/find/:searchName', (req, res) => {
     });
 
     mediaResults.forEach((title) => {
-
       Title.findOne({
         id: title.id
       }, (err, found) => {
@@ -214,32 +222,8 @@ app.get('/find/:searchName', (req, res) => {
   });
 });
 
-
-
-app.get('/getDictionaries', (req, res) => {
-  res.send({
-    genres,
-    keywords
-  });
-});
-
-//Sample code for a mongoose lookup
-function getMovie(id) {
-  Title.find({
-    id: id
-  }, (err, title) => {
-    if (err) {
-      console.log('movie find error', err);
-    } else if (title) {
-      return title;
-    } else {
-      console.log('movie not cached');
-    }
-  });
-}
 //Adds a new keyword with recommended movies and show to the cache
 function cacheNewKeyword(_id, _name) {
-
   Keyword.findOne({
     id: _id
   }, (error, found) => {
@@ -360,6 +344,7 @@ function cacheNewGenre(_id, _name, page) {
     });
 }
 
+//gets the movie details for a given id.
 app.get('/getMovie/:id', (req, res) => {
   Title.findOne({
     id: req.params.id
