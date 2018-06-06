@@ -1,8 +1,23 @@
-Ethan Vander Horn - Wrote backend, database, and api code in pair programming with Jacqueline. Created recommendation algorithm.
-Jacqueline Bontigao - Wrote backend, database, and api code in pair programming with Ethan. Wrote all the weekly writeups.
-Tony Chan - Wrote and designed front end code and styling in pair programming with Jomar. Integrated visualization library.
-Jomar Batac - Wrote and designed front end code and styling in pair programming with Tony.
+###Team Contribution Summary
 
+Ethan Vander Horn
+..*wrote backend, database, and api code in pair programming with Jacqueline
+..*created recommendations algorithm
+
+Jacqueline Bontigao
+..*wrote backend, database, and api code in pair programming with Ethan
+..*wrote weekly writeups
+
+Tony Chan
+..*wrote and designed front end code and styling in pair programming with Jomar
+..*integrated visualization library
+
+Jomar Batac
+..*wrote and designed front end code and styling in pair programming with Tony
+..*handled user testing
+
+
+###Source Code Files Description
 
 server.js -- Makes all API calls, manages mongolab database that serves as a cache for API results.
 homepage.html -- Displays a simple description of the appflow.
