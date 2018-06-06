@@ -4,11 +4,11 @@ This demo visualises wine and cheese pairings.
 
 const recNodes = {};
 const basisNodes = {};
-
+let bookmarks = {};
 $(function() {
-  const bookmarks = {};
 
   favorites = JSON.parse(localStorage.favorites);
+
 
   SetupLists(favorites);
 
@@ -40,15 +40,21 @@ $(function() {
       data = bookmarks[id];
       const bookMarkDiv = document.getElementById('bookmarks');
       bookMarkDiv.insertAdjacentHTML('beforeend', ['<span id="bookmark-span', data.id, '" style="color:white;">',
+        '<button id="bmid' + data.id + '"class="bookmarkBTN">',
         data.title + '&thinsp;' + '&thinsp;',
+        '</button>',
         '<button class="bookmark-del" id="' + data.id + '">',
         '<i class="fas fa-times" style="color:black;"></i></button>',
         '<br></span>'
       ].join(''));
+      $('#bmid' + data.id).click((e) => {
+        highlightByID(data.id);
+      });
       $('#' + data.id).click((e) => {
         removeBookmark(data.id);
       });
       console.log("bookmarked " + id);
+      localStorage.bookmarks = JSON.stringify(bookmarks);
     } else {
       console.log("already bookmarked " + id);
     }
@@ -57,11 +63,14 @@ $(function() {
   function removeBookmark(id) {
     if (bookmarks[id]) {
       delete bookmarks[id];
+      localStorage.bookmarks = JSON.stringify(bookmarks);
       $('#bookmark-span' + id).remove();
     }
   }
 
   LoadRecs();
+
+
 
   var infoTemplate = Handlebars.compile([
     '<center class="ac-name" style="color: #fff; padding-top: 20px;"> {{title}} </center>',
@@ -106,11 +115,11 @@ $(function() {
     }));
   };
 
-  function highlightByID(id){
-    if (recNodes[id]){
-      highlight(recNodes[id]);
-    } else {
-      highlight(BasisNodes[id]);
+  function highlightByID(id) {
+    if (recNodes[id]) {
+      cy.$('#' + id).select();
+    }  else {
+      console.log('couldn\' highlight id: ' + id);
     }
   }
 
@@ -382,8 +391,6 @@ $(function() {
       combined.push(genreList[key])
     });
 
-    const recNodes = [];
-    const basisNodes = [];
     const edges = [];
     const moviePromises = [styleP];
     //console.dir(combined);
@@ -422,7 +429,6 @@ $(function() {
           }));
         });
       }
-      //console.dir(moviePromises);
 
       Promise.all(moviePromises).then(changeData);
 
@@ -505,15 +511,15 @@ $(function() {
         });
         console.dir(then[0]);
 
-        const numBasis = Object.keys(BasisNodes).length;
+        const numBasis = Object.keys(basisNodes).length;
         const centerX = 1000;
         const centerY = 1000;
         const diameter1 = 750;
         let bki = 0;
         let degreesPer = 360 / numBasis;
         console.log("Basis pos:");
-        Object.keys(BasisNodes).forEach((bkey) => {
-          const basisNode = BasisNodes[bkey];
+        Object.keys(basisNodes).forEach((bkey) => {
+          const basisNode = basisNodes[bkey];
           const angle = degreesPer * bki;
           let temp = angle_to_pos(angle, diameter1);
           let posx = temp.mX + centerX;
@@ -532,8 +538,8 @@ $(function() {
             let ypos = centerY;
             const basisKeys = Object.keys(recommendations[node.data.id].basis);
             basisKeys.forEach((basisKey) => {
-              xpos = xpos + BasisNodes[basisKey].position.x;
-              ypos = ypos + BasisNodes[basisKey].position.y;
+              xpos = xpos + basisNodes[basisKey].position.x;
+              ypos = ypos + basisNodes[basisKey].position.y;
             });
             xpos = xpos / (basisKeys.length + 1);
             ypos = ypos / (basisKeys.length + 1);
@@ -553,9 +559,19 @@ $(function() {
         });
 
         var stylePRes = then[0];
-        initCy([graphPRes, stylePRes])
+        initCy([graphPRes, stylePRes]);
+        load_bookmarks();
       }
     });
+  }
+
+  function load_bookmarks(){
+    if (localStorage.bookmarks) {
+      Object.keys(JSON.parse(localStorage.bookmarks)).forEach((bookKey) => {
+        console.log(bookKey);
+        addBookmark(bookKey);
+      });
+    }
   }
 
   function angle_to_pos(deg, diameter) {

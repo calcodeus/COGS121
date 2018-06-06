@@ -6,6 +6,19 @@ html, body {
   overflow: hidden;
 }
 
+.bookmarkBTN {
+  color: white;
+  border: none;
+  background-color: inherit;
+  padding: 14px 28px;
+  font-size: 16px;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.bookmarkBTN:hover {
+  background: #222;
+}
 
 #loading {
   position: absolute;
@@ -83,7 +96,7 @@ body.calc #loading {
   width: 14em;
   border: 1px solid #ccc;
   max-height: 80vh;
-  max-height: calc( 100vh - 4em );
+  max-height: calc( 100vh - 4em);
   overflow: auto;
   margin-top: 0.5em;
 }
@@ -99,7 +112,7 @@ body.calc #loading {
   cursor: pointer;
 }
 
-.tt-suggestion + .tt-suggestion {
+.tt-suggestion+.tt-suggestion {
   border-top: 1px solid #ccc;
 }
 
@@ -107,15 +120,11 @@ body.calc #loading {
   font-size: 2em;
 }
 
-.ac-node-type,
-.ac-milk,
-.ac-country,
-.ac-more {
+.ac-node-type, .ac-milk, .ac-country, .ac-more {
   font-size: 1em;
   padding-bottom: 5px;
-    padding-top: 5px;
+  padding-top: 5px;
 }
-
 
 #cy {
   height: 100%;
@@ -130,7 +139,6 @@ body.calc #loading {
   position: relative;
   margin: 0em;
   margin-left: 1em;
-
   padding: 15px;
   /*background: #bbdbf7;*/
   background: #000;
@@ -144,28 +152,26 @@ body.calc #loading {
   position: relative;
   margin: 0em;
   margin-left: 1em;
-
   padding: 15px;
   /*background: #bbdbf7;*/
   background: #000;
   border: 1px solid #ccc;
   /* box-shadow: inset 0 0 0 0.25em rgba(187, 219, 247, 0.9); */
-  max-height:100%;
-  min-height: 90%;*/
-  max-width: 100%;
+  max-height: 100%;
+  min-height: 90%;
+  */ max-width: 100%;
   min-width: 90%;
-
 }
 
 #info p {
   margin: 0;
 }
 
-.description{
+.description {
   color: white;
 }
 
-.poster{
+.poster {
   float: right;
   padding-bottom: 15px;
   margin: 10px;
@@ -179,9 +185,7 @@ body.calc #loading {
   z-index: 999;
 }
 
-#reset,
-#filter,
-#about {
+#reset, #filter, #about {
   width: 3em;
   margin: 0.5em;
   position: absolute;
@@ -203,7 +207,7 @@ body.calc #loading {
   left: 0;
 }
 
-#about-content p + p {
+#about-content p+p {
   margin: 0;
   margin-top: 0.5em;
 }
@@ -245,7 +249,7 @@ body.calc #loading {
   padding: 0 !important;
   overflow: auto;
   max-height: 80vh;
-  max-height: calc( 100vh - 4em );
+  max-height: calc( 100vh - 4em);
   width: 18em;
 }
 
@@ -259,11 +263,9 @@ body.calc #loading {
   line-height: 1.1;
 }
 
-.filterset.right {
+.filterset.right {}
 
-}
-
-.filterset + .filterset {
+.filterset+.filterset {
   margin-left: 0.5em;
 }
 
@@ -274,7 +276,7 @@ body.calc #loading {
   margin-bottom: 0.25em;
 }
 
-* + .filterset-section-title {
+*+.filterset-section-title {
   border-top: 1px solid rgba(128, 128, 128, 0.15);
   padding-top: 0.5em;
   margin-left: 0;
