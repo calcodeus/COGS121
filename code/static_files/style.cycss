@@ -1,3 +1,6 @@
+/* contains the styling for the graph. Follows guidelines from the API.
+*/
+
 core {
 	active-bg-color: #fff;
 	active-bg-opacity: 0.333;
