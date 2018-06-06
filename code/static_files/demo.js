@@ -43,8 +43,8 @@ $(function() {
         '<button id="bmid' + data.id + '"class="bookmarkBTN">',
         data.title + '&thinsp;' + '&thinsp;',
         '</button>',
-        '<button class="bookmark-del" id="' + data.id + '">',
-        '<i class="fas fa-times" style="color:black;"></i></button>',
+        '<button class="del" id="' + data.id + '">',
+        '<i class="fas fa-times" ></i></button>',
         '<br></span>'
       ].join(''));
       $('#bmid' + data.id).click((e) => {

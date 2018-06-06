@@ -17,7 +17,18 @@ html, body {
 }
 
 .bookmarkBTN:hover {
-  background: #222;
+  background: #4c5e67;
+}
+
+.del {
+  background-color: #fff;
+  color: #508CA4;
+  border: none;
+  border-radius: 8px;
+  width: 30px;
+  height: 28px;
+  margin-bottom: 10px;
+  margin-top: 10px;
 }
 
 #loading {

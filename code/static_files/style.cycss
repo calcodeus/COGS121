@@ -44,10 +44,10 @@ node[NodeType = "anime"],
 node[NodeType = "movie"] {
 	text-wrap: wrap;
 	text-max-width: 200;
-	background-color: #FACD37;
+	background-color: #b87dad;
 	text-outline-width: 0;
 	/*text-outline-color: #FACD37;*/
-	color: #FACD37;
+	color: #b87dad;
 	width: mapData(Quality, 70, 100, 20, 50);
 	height: mapData(Quality, 70, 100, 20, 50);
 }
@@ -62,8 +62,8 @@ edge[interaction = "cw"] {
 }
 
 node[NodeType = "basis"] {
-	background-color: #DE3128;
-	color: #DE3128;
+	background-color: #0f0891;
+	color: #0f0891;
 }
 
 edge[interaction = "cr"] {
