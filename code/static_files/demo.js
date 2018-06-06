@@ -1,4 +1,6 @@
 /*
+ * This file is for generating, displaying, and managing
+ * the graph and any data related to the graph of results.
  */
 
 const recNodes = {};
@@ -582,7 +584,7 @@ $(function() {
         const diameter1 = 750;
         let bki = 0;
         let degreesPer = 360 / numBasis;
-        console.log("Basis pos:");
+        //Arrange the basis nodes in a circle.
         Object.keys(basisNodes).forEach((bkey) => {
           const basisNode = basisNodes[bkey];
           const angle = degreesPer * bki;
@@ -591,12 +593,13 @@ $(function() {
           let posy = temp.mY + centerY;
           basisNode.position.x = posx;
           basisNode.position.y = posy;
-          console.log(posx + ", " + posy)
           bki++;
         });
         const numNodes = goodRecs.length;
-        console.log("Rec pos:");
         const usedLocs = {};
+        // arrange the recnodes to be inside the circle
+        // of basis nodes. position is the average of the
+        // related nodes and the center positions.
         graphPRes.elements.nodes.forEach((node) => {
           if (node.data.NodeType != "basis") {
             let xpos = centerX;
@@ -608,28 +611,29 @@ $(function() {
             });
             xpos = xpos / (basisKeys.length + 1);
             ypos = ypos / (basisKeys.length + 1);
-            while (usedLocs[xpos + '' + ypos]) {
+            //collision management.
+            while (usedLocs[xpos + ' ' + ypos]) {
               ypos = ypos + 50
             }
-            usedLocs[xpos + '' + ypos] = 1;
+            usedLocs[xpos + ' ' + ypos] = 1;
             node.position.x = xpos;
             node.position.y = ypos;
-          } else {
-            console.log('skip');
           }
         });
 
-        graphPRes.elements.nodes.forEach((node) => {
-          console.log("position: " + node.position.x + ", " + node.position.y);
-        });
-
         var stylePRes = then[0];
+        // initialize the graph with the new graph
+        // data we just created and the style
+        // we read in a long time ago.
         initCy([graphPRes, stylePRes]);
+        //load any bookmarks from a previous session.
+        //Requires Cy to be generated already.
         load_bookmarks();
       }
     });
   }
 
+  // loads in any bookmarks from a pervious session.
   function load_bookmarks() {
     if (localStorage.bookmarks) {
       Object.keys(JSON.parse(localStorage.bookmarks)).forEach((bookKey) => {
@@ -638,7 +642,7 @@ $(function() {
       });
     }
   }
-
+  // helper function for putting things in a circle.
   function angle_to_pos(deg, diameter) {
     const rad = Math.PI * deg / 180;
     const r = diameter / 2
@@ -651,6 +655,8 @@ $(function() {
     return temp;
   }
 
+  // didn't write
+  // resets the position of nodes.
   $('#reset').on('click', function() {
     if (isDirty()) {
       clear();

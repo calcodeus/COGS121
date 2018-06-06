@@ -40,63 +40,6 @@
   <!-- end wine and cheese notes  -->
 
   <script type="text/javascript">
-    let favorites = {};
-    let keywordList = {};
-    const combined = [];
-    let genreList = {};
-    let recommendations = {};
-
-    function recFor(type, id) {
-      const requestURL = 'recommend/' + type + '/' + id;
-      //console.log('making ajax request to:', requestURL);
-      return $.get(requestURL);
-    }
-
-    function keywordSearch() {
-      const defList = [];
-      Object.keys(keywordList).forEach((k) => {
-        //console.log(k);
-        defList.push(recFor('Keyword', k));
-      });
-      Object.keys(genreList).forEach((g) => {
-        //console.log(g);
-        //defList.push(recFor('Genre', g));
-      });
-      return defList;
-    }
-
-    function SetupLists(favs) {
-      //console.log(typeof favs);
-      console.dir(favs);
-      Object.keys(favs).forEach((id) => {
-        const favorite = favs[id];
-        favorite.genre_ids.forEach((gi) => {
-          if (!genreList[gi]) {
-            genreList[gi] = {
-              id: gi,
-              score: 0,
-              basis: []
-            }
-          }
-          genreList[gi].score += 1;
-          genreList[gi].basis.push(id);
-        });
-        favorite.keyword_ids.forEach((ki) => {
-          if (!keywordList[ki.id]) {
-            keywordList[ki.id] = {
-              id: ki.id,
-              name: ki.name,
-              score: 0,
-              basis: []
-            }
-          }
-          keywordList[ki.id].score += 1;
-          keywordList[ki.id].basis.push(id);
-        });
-      });
-      //console.dir(keywordList);
-      //console.dir(genreList);
-    }
 
     $(document).ready(() => {
       $(document).ajaxError(() => {
