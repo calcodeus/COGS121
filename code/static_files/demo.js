@@ -24,8 +24,8 @@ function recFor(type, id) {
 }
 
 /*
-* iterates through keywords and gets recs for all
-*/
+ * iterates through keywords and gets recs for all
+ */
 function keywordSearch() {
   const defList = [];
   Object.keys(keywordList).forEach((k) => {
@@ -33,16 +33,16 @@ function keywordSearch() {
     defList.push(recFor('Keyword', k));
   });
   //Object.keys(genreList).forEach((g) => {
-    //console.log(g);
-    //defList.push(recFor('Genre', g));
+  //console.log(g);
+  //defList.push(recFor('Genre', g));
   //});
   return defList;
 }
 
 /*
-* compiles list of genres and keywords and
-* calculates their respective scores.
-*/
+ * compiles list of genres and keywords and
+ * calculates their respective scores.
+ */
 function SetupLists(favs) {
   //console.log(typeof favs);
   console.dir(favs);
@@ -143,7 +143,7 @@ $(function() {
     '{{#if poster_path}}<img class="poster" src=http://image.tmdb.org/t/p/w185/{{poster_path}}>{{/if}}',
     '<p class="description">{{overview}}</p></div>',
     '<div class="col-xs-1"></div></div>',
-    '{{#if isRec}}<center style="padding-bottom: 20px;"><button onClick="addBookmark({{id}})">add</button></center>{{/if}}'
+    '{{#if isRec}}<center style="padding-bottom: 20px;"><button onClick="addBookmark({{id}})" style="background-color: #fff; color: #508CA4; border: none; border-radius: 8px; height: 32px;">add</button></center>{{/if}}'
 
   ].join(''));
 
@@ -633,7 +633,6 @@ $(function() {
     });
   }
 
-  // loads in any bookmarks from a pervious session.
   function load_bookmarks() {
     if (localStorage.bookmarks) {
       Object.keys(JSON.parse(localStorage.bookmarks)).forEach((bookKey) => {
