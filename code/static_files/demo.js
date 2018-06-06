@@ -124,9 +124,9 @@ $(function() {
 
   //removes bookmark from the list.
   function removeBookmark(id) {
-    console.log("removing bookmark-span"+id);
+    console.log("removing bookmark-span" + id);
     if (bookmarks[id]) {
-      console.log("removing bookmark-span"+id);
+      console.log("removing bookmark-span" + id);
 
       delete bookmarks[id];
       localStorage.bookmarks = JSON.stringify(bookmarks);
@@ -638,7 +638,9 @@ $(function() {
     if (localStorage.bookmarks) {
       Object.keys(JSON.parse(localStorage.bookmarks)).forEach((bookKey) => {
         console.log(bookKey);
-        addBookmark(bookKey);
+        if (recommendations[bookKey]) {
+          addBookmark(bookKey);
+        }
       });
     }
   }
