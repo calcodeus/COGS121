@@ -1,3 +1,5 @@
+<!-- this file allows the user to add to and maintain a list
+     of their favorite movies and shows.-->
 <html>
 
 <head>
@@ -39,7 +41,6 @@
 
     function findKeywords(type, id) {
       const requestURL = 'keywords/' + type + '/' + id;
-      console.log('finding keyword for: ' + type + '/' + id);
 
       $.ajax({
         url: requestURL,
@@ -60,6 +61,8 @@
     // jQuery convention for running when the document has been fully loaded:
     $(document).ready(() => {
 
+      // checks if there is any stored favorites from a pervious
+      // session. If there is, it loads them in.
       const stored = localStorage.favorites;
 
       if (stored) {
