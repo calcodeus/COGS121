@@ -45,7 +45,7 @@ function keywordSearch() {
  */
 function SetupLists(favs) {
   //console.log(typeof favs);
-  console.dir(favs);
+  //console.dir(favs);
   Object.keys(favs).forEach((id) => {
     const favorite = favs[id];
     favorite.genre_ids.forEach((gi) => {
@@ -103,7 +103,8 @@ $(function() {
       bookmarks[id] = recommendations[id];
       data = bookmarks[id];
       const bookMarkDiv = document.getElementById('bookmarks');
-      bookMarkDiv.insertAdjacentHTML('beforeend', ['<span id="bookmark-span', data.id, '" style="color:white;">',
+      bookMarkDiv.insertAdjacentHTML('beforeend', [
+        '<span id="bookmark-span', data.id, '" style="color:white;">',
         '<button id="bmid' + data.id + '"class="bookmarkBTN">',
         data.title,
         '</button>',
@@ -117,16 +118,16 @@ $(function() {
       $('#' + data.id).click((e) => {
         removeBookmark(data.id);
       });
-      console.log("bookmarked " + id);
       localStorage.bookmarks = JSON.stringify(bookmarks);
-    } else {
-      console.log("already bookmarked " + id);
     }
   }
 
   //removes bookmark from the list.
   function removeBookmark(id) {
+    console.log("removing bookmark-span"+id);
     if (bookmarks[id]) {
+      console.log("removing bookmark-span"+id);
+
       delete bookmarks[id];
       localStorage.bookmarks = JSON.stringify(bookmarks);
       $('#bookmark-span' + id).remove();
