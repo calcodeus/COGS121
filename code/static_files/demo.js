@@ -101,7 +101,7 @@ $(function() {
   addBookmark = function(id) {
     if (!bookmarks[id]) {
       bookmarks[id] = recommendations[id];
-      data = bookmarks[id];
+      const data = bookmarks[id];
       const bookMarkDiv = document.getElementById('bookmarks');
       bookMarkDiv.insertAdjacentHTML('beforeend', [
         '<span id="bookmark-span', data.id, '" style="color:white;">',
