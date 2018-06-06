@@ -78,7 +78,7 @@ $(function() {
     '{{#if poster_path}}<img class="poster" src=http://image.tmdb.org/t/p/w185/{{poster_path}}>{{/if}}',
     '<p class="description">{{overview}}</p></div>',
     '<div class="col-xs-1"></div></div>',
-    '{{#if isRec}}<center style="padding-bottom: 20px;"><button onClick="addBookmark({{id}})">add</button></center>{{/if}}'
+    '{{#if isRec}}<center style="padding-bottom: 20px;"><button onClick="addBookmark({{id}})" style="background-color: #fff; color: #508CA4; border: none; border-radius: 8px; height: 32px;">add</button></center>{{/if}}'
 
   ].join(''));
 
@@ -118,7 +118,7 @@ $(function() {
   function highlightByID(id) {
     if (recNodes[id]) {
       cy.$('#' + id).select();
-    }  else {
+    } else {
       console.log('couldn\' highlight id: ' + id);
     }
   }
@@ -565,7 +565,7 @@ $(function() {
     });
   }
 
-  function load_bookmarks(){
+  function load_bookmarks() {
     if (localStorage.bookmarks) {
       Object.keys(JSON.parse(localStorage.bookmarks)).forEach((bookKey) => {
         console.log(bookKey);
