@@ -184,6 +184,7 @@ body.calc #loading {
 
 .poster {
   float: right;
+  height:500px;
   padding-bottom: 15px;
   margin: 10px;
 }
