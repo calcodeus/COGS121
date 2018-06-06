@@ -1,10 +1,79 @@
 /*
-This demo visualises wine and cheese pairings.
-*/
+ */
 
 const recNodes = {};
 const basisNodes = {};
 let bookmarks = {};
+
+let favorites = {};
+let keywordList = {};
+const combined = [];
+let genreList = {};
+let recommendations = {};
+
+/*
+ * sends query to server
+ * to get recommendations for genre or keyword
+ */
+function recFor(type, id) {
+  const requestURL = 'recommend/' + type + '/' + id;
+  //console.log('making ajax request to:', requestURL);
+  return $.get(requestURL);
+}
+
+/*
+* iterates through keywords and gets recs for all
+*/
+function keywordSearch() {
+  const defList = [];
+  Object.keys(keywordList).forEach((k) => {
+    //console.log(k);
+    defList.push(recFor('Keyword', k));
+  });
+  //Object.keys(genreList).forEach((g) => {
+    //console.log(g);
+    //defList.push(recFor('Genre', g));
+  //});
+  return defList;
+}
+
+/*
+* compiles list of genres and keywords and
+* calculates their respective scores.
+*/
+function SetupLists(favs) {
+  //console.log(typeof favs);
+  console.dir(favs);
+  Object.keys(favs).forEach((id) => {
+    const favorite = favs[id];
+    favorite.genre_ids.forEach((gi) => {
+      if (!genreList[gi]) {
+        genreList[gi] = {
+          id: gi,
+          score: 0,
+          basis: []
+        }
+      }
+      genreList[gi].score += 1;
+      genreList[gi].basis.push(id);
+    });
+    favorite.keyword_ids.forEach((ki) => {
+      if (!keywordList[ki.id]) {
+        keywordList[ki.id] = {
+          id: ki.id,
+          name: ki.name,
+          score: 0,
+          basis: []
+        }
+      }
+      keywordList[ki.id].score += 1;
+      keywordList[ki.id].basis.push(id);
+    });
+  });
+  //console.dir(keywordList);
+  //console.dir(genreList);
+}
+
 $(function() {
 
   favorites = JSON.parse(localStorage.favorites);
@@ -19,21 +88,14 @@ $(function() {
 
   var cy;
 
-  // get exported json from cytoscape desktop via ajax
-  var graphP = $.ajax({
-    url: 'https://cdn.rawgit.com/maxkfranz/3d4d3c8eb808bd95bae7/raw', // wine-and-cheese.json
-    // url: './data.json',
-    type: 'GET',
-    dataType: 'json'
-  });
-
-  // also get style via ajax
+  // gets the graph style file.
   var styleP = $.ajax({
     url: './style.cycss', // wine-and-cheese-style.cycss
     type: 'GET',
     dataType: 'text'
   });
 
+  // add bookmark to the bookmark list.
   addBookmark = function(id) {
     if (!bookmarks[id]) {
       bookmarks[id] = recommendations[id];
@@ -41,7 +103,7 @@ $(function() {
       const bookMarkDiv = document.getElementById('bookmarks');
       bookMarkDiv.insertAdjacentHTML('beforeend', ['<span id="bookmark-span', data.id, '" style="color:white;">',
         '<button id="bmid' + data.id + '"class="bookmarkBTN">',
-        data.title + '&thinsp;' + '&thinsp;',
+        data.title,
         '</button>',
         '<button class="del" id="' + data.id + '">',
         '<i class="fas fa-times" ></i></button>',
@@ -60,6 +122,7 @@ $(function() {
     }
   }
 
+  //removes bookmark from the list.
   function removeBookmark(id) {
     if (bookmarks[id]) {
       delete bookmarks[id];
@@ -71,7 +134,7 @@ $(function() {
   LoadRecs();
 
 
-
+  // template for displaying the movie information.
   var infoTemplate = Handlebars.compile([
     '<center class="ac-name" style="color: #fff; padding-top: 20px;"> {{title}} </center>',
     '<div class="row" style="margin: auto;padding-top: 30px;padding-bottom: 40px;"><div class="col-xs-1"></div><div>',
@@ -91,6 +154,8 @@ $(function() {
   var lastHighlighted = null;
   var lastUnhighlighted = null;
 
+  //didn't write this.
+  //It fades the other elems out when selecting.
   function getFadePromise(ele, opacity) {
     return ele.animation({
       style: {
@@ -100,6 +165,8 @@ $(function() {
     }).play().promise();
   };
 
+  //didn't write this.
+  //puts things back to where they were.
   var restoreElesPositions = function(nhood) {
     return Promise.all(nhood.map(function(ele) {
       var p = ele.data('orgPos');
@@ -114,15 +181,16 @@ $(function() {
       }).play().promise();
     }));
   };
-
+  // selects the item with the given id
   function highlightByID(id) {
     if (recNodes[id]) {
       cy.$('#' + id).select();
-    }  else {
+    } else {
       console.log('couldn\' highlight id: ' + id);
     }
   }
-
+  //selects a node, making it fron and center and
+  //turning the bookmarks bar into the inspect window.
   function highlight(node) {
     var oldNhood = lastHighlighted;
 
@@ -285,23 +353,17 @@ $(function() {
       .then(showOthers);
   }
 
+  //displays node info on the inspect window.
+  //Poster description etc.
   function showNodeInfo(node) {
     const id = node.data().id;
     if (node.data().NodeType == 'basis') {
       const data = favorites[id];
       $('#info').html(infoTemplate(data)).show();
-      console.log('id: ' + id);
-      console.dir(data.keyword_ids);
-      console.dir(data.genre_ids);
-      console.dir(data);
     } else {
       const data = recommendations[id];
       data.isRec = true;
       $('#info').html(infoTemplate(data)).show();
-      console.log('id: ' + id);
-      console.dir(data.keyword_ids);
-      console.dir(data.genre_ids);
-      console.dir(data);
     }
   }
 
@@ -309,6 +371,8 @@ $(function() {
     $('#info').hide();
   }
 
+
+  //initializes the cytoscape graph.
   function initCy(then) {
     var loading = document.getElementById('loading');
     var expJson = then[0];
@@ -379,11 +443,10 @@ $(function() {
 
   }
 
+  //loads in a list of recommendations
+  //and displays them in the graph.
   function LoadRecs() {
-    console.dir(keywordList);
-    console.dir(genreList);
     var promises = keywordSearch();
-    //const combined = [];
     Object.keys(keywordList).forEach((key) => {
       combined.push(keywordList[key])
     });
@@ -391,18 +454,24 @@ $(function() {
       combined.push(genreList[key])
     });
 
-    const edges = [];
     const moviePromises = [styleP];
-    //console.dir(combined);
-    //console.log(styleP);
 
+    // after all the server calls for recs are done we
+    // iterate through the results and calculate scores
+    // and put together data needed for the nodes.
     Promise.all(promises).then((results) => {
       for (i = 0; i < results.length; i++) {
         const result = results[i];
         result.forEach((d) => {
           const getMovieURL = 'getMovie/' + d
           const k = i;
+          // need to make another server querie
+          // in order to get the movie details.
+          // We store the promises so that we know when
+          // we have the data needed to create the graph.
           moviePromises.push($.get(getMovieURL, (title) => {
+            // we make some additions to the recommendations
+            // that we will need for calculating score and sorting recs.
             if (!recommendations[title.id]) {
               recommendations[title.id] = title;
               recommendations[title.id].keyword_ids = {};
@@ -429,21 +498,19 @@ $(function() {
           }));
         });
       }
-
+      // we wait until all the queries are complete so we know
+      //we have the node data we need to procede.
       Promise.all(moviePromises).then(changeData);
 
       function changeData(then) {
+        //this represents the future graph.
         var graphPRes = {
           elements: {
             nodes: [],
             edges: []
           }
         };
-
-        //then.forEach((movie)=>{
-        //  movie.basis = recommendations[movie.id].basis;
-        //});
-
+        // we are sorting the recs by score and taking the top 10.
         let recList = Object.keys(recommendations).map((k) => {
           return recommendations[k]
         });
@@ -460,11 +527,10 @@ $(function() {
           } else break;
         }
 
-        var node_pos = 500;
-        var basis_pos = 500;
         goodRecs.forEach((movieRec) => {
-          //for (i = 1; i < then.length; i++) {
-          //var movieRec = recommendations[movieID];
+          // We create a new node for each rec and
+          // give it the name and id. id is same as
+          // rec so we can always access the data.
           const recNode = {
             data: {
               id: movieRec.id,
@@ -478,7 +544,9 @@ $(function() {
           }
           graphPRes.elements.nodes.push(recNode);
           recNodes[movieRec.id] = recNode;
-
+          // we also create the "basis" nodes.
+          //Basis nodes are the favorite node that
+          //justifies a given recommendation.
           Object.keys(movieRec.basis).forEach((key) => {
             const basis = movieRec.basis[key];
             if (!basisNodes[basis]) {
@@ -496,9 +564,7 @@ $(function() {
               graphPRes.elements.nodes.push(basisNode);
               basisNodes[basis] = basisNode;
             }
-            if (basis == "13156") {
-              console.log("second hand lions rec: " + movieRec.title);
-            }
+            // connect the basis node and the rec node.
             graphPRes.elements.edges.push({
               data: {
                 id: 's' + movieRec.id + 't' + basis,
@@ -509,7 +575,6 @@ $(function() {
           });
 
         });
-        console.dir(then[0]);
 
         const numBasis = Object.keys(basisNodes).length;
         const centerX = 1000;
@@ -565,7 +630,7 @@ $(function() {
     });
   }
 
-  function load_bookmarks(){
+  function load_bookmarks() {
     if (localStorage.bookmarks) {
       Object.keys(JSON.parse(localStorage.bookmarks)).forEach((bookKey) => {
         console.log(bookKey);

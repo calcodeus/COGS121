@@ -65,64 +65,6 @@
       return defList;
     }
 
-    function fakeRecs() {
-      let i = 0;
-      while (i < 30) {
-        i = i + 1;
-        if (i >= Object.keys(favorites).length) {
-          console.log('not enough favorites!');
-          break;
-        }
-        favorites[Object.keys(favorites)[i]].keyword_ids.forEach((kid) => {
-
-          const requestURL = 'recommend/Keyword/' + kid;
-          //console.log('hitting: ' + requestURL);
-          $.get(requestURL, (data) => {
-            if (data != []) {
-              //console.log(data);
-            }
-            data.forEach((d) => {
-              const getMovieURL = 'getMovie/' + d;
-              const recList = [];
-              $.get(getMovieURL, (title) => {
-                if (!recommendations[title.id]) {
-                  recommendations[title.id] = title;
-                  recList.push(title);
-                  sessionStorage.recList = JSON.stringify(recList);
-                  const loc = recList.length - 1;
-                  DisplayRec(title, loc);
-                }
-              });
-            });
-          });
-        });
-      }
-    }
-
-    function DisplayRec(title, number) {
-      return;
-      if (!title) {
-        console.log('shits broke');
-      }
-      if (!title.poster_path) {
-        console.log('no poster for obj');
-        console.dir(title);
-
-      }
-      let resultsField = '';
-      const name = title.title;
-      //console.log(name);
-      const poster = title.poster_path;
-      const pre = '<div class="col-sm-4" style="text-align:center; padding-bottom: 30px;"><img class="poster" src=http://image.tmdb.org/t/p/w185/';
-      const mid = ' alt=""><br><a href="mediaPage.html#' + number + '">';
-      const post = '</a></div><br>';
-      resultsField += pre + poster + mid + name + post;
-      let resultDiv = document.getElementById('results');
-
-      resultDiv.insertAdjacentHTML('beforeend', resultsField);
-    }
-
-
     function SetupLists(favs) {
       //console.log(typeof favs);
       console.dir(favs);
@@ -156,20 +98,7 @@
       //console.dir(genreList);
     }
 
-    // jQuery convention for running when the document has been fully loaded:
     $(document).ready(() => {
-      //console.log('favorites: ');
-      //console.log(typeof favorites);
-      //console.dir(favorites);
-      $('#next').click(() => {
-        //LoadRecs();
-      });
-      $('#previous').click(() => {
-        //LoadRecs();
-      });
-
-      // define a generic Ajax error handler:
-      // http://api.jquery.com/ajaxerror/
       $(document).ajaxError(() => {
         $('#status').html('Error: unknown ajaxError!');
       });
