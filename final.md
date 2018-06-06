@@ -21,6 +21,7 @@
 * handled user testing
 
 
+<br><br>
 
 
 # Source Code Files Description
@@ -47,6 +48,7 @@
 * contains the styling for the graph display.
 
 
+<br><br>
 
 
 # Link to Demo Video
