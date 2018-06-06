@@ -1,4 +1,4 @@
-### Team Contribution Summary
+# Team Contribution Summary
 
 ## Ethan Vander Horn
 
@@ -21,7 +21,7 @@
 * handled user testing
 
 
-### Source Code Files Description
+# Source Code Files Description
 
 ## server.js
 * Makes all API calls, manages mongolab database that serves as a cache for API results.
@@ -43,3 +43,7 @@
 
 ## style.cycss
 * contains the styling for the graph display.
+
+
+# Link to Demo Video
+[link](https://www.youtube.com/watch?v=DYIlQck6a3E&feature=youtu.be)
