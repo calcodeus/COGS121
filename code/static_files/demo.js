@@ -2,6 +2,9 @@
 This demo visualises wine and cheese pairings.
 */
 
+const recNodes = {};
+const basisNodes = {};
+
 $(function() {
   const bookmarks = {};
 
@@ -36,10 +39,10 @@ $(function() {
       bookmarks[id] = recommendations[id];
       data = bookmarks[id];
       const bookMarkDiv = document.getElementById('bookmarks');
-      bookMarkDiv.insertAdjacentHTML('beforeend', ['<span id="bookmark-span', data.id, '">',
+      bookMarkDiv.insertAdjacentHTML('beforeend', ['<span id="bookmark-span', data.id, '" style="color:white;">',
         data.title + '&thinsp;' + '&thinsp;',
         '<button class="bookmark-del" id="' + data.id + '">',
-        '<i class="fas fa-times"></i></button>',
+        '<i class="fas fa-times" style="color:black;"></i></button>',
         '<br></span>'
       ].join(''));
       $('#' + data.id).click((e) => {
@@ -62,9 +65,9 @@ $(function() {
 
   var infoTemplate = Handlebars.compile([
     '<center class="ac-name" style="color: #fff; padding-top: 20px;"> {{title}} </center>',
-    '<div class="row" style="text-align: center; margin: auto;padding-top: 30px;padding-bottom: 40px;"><div class="col-xs-1"></div><div class="col-xs-5">',
-    '{{#if poster_path}}<img class="poster" src=http://image.tmdb.org/t/p/w185/{{poster_path}}></div>{{/if}}',
-    '<div class="col-xs-5"> <p class="description">{{overview}}</p></div>',
+    '<div class="row" style="margin: auto;padding-top: 30px;padding-bottom: 40px;"><div class="col-xs-1"></div><div>',
+    '{{#if poster_path}}<img class="poster" src=http://image.tmdb.org/t/p/w185/{{poster_path}}>{{/if}}',
+    '<p class="description">{{overview}}</p></div>',
     '<div class="col-xs-1"></div></div>',
     '{{#if isRec}}<center style="padding-bottom: 20px;"><button onClick="addBookmark({{id}})">add</button></center>{{/if}}'
 
@@ -102,6 +105,14 @@ $(function() {
       }).play().promise();
     }));
   };
+
+  function highlightByID(id){
+    if (recNodes[id]){
+      highlight(recNodes[id]);
+    } else {
+      highlight(BasisNodes[id]);
+    }
+  }
 
   function highlight(node) {
     var oldNhood = lastHighlighted;
@@ -430,21 +441,25 @@ $(function() {
         let recList = Object.keys(recommendations).map((k) => {
           return recommendations[k]
         });
+        recList.forEach((rec) => {
+          console.log(rec.score);
+        });
         recList.sort((a, b) => {
           return b.score - a.score;
         });
         const goodRecs = [];
         for (index = 0; index < 10; index++) {
-          goodRecs.push(recList[index]);
+          if (recList[index]) {
+            goodRecs.push(recList[index]);
+          } else break;
         }
 
-        const basisList = {};
         var node_pos = 500;
         var basis_pos = 500;
         goodRecs.forEach((movieRec) => {
           //for (i = 1; i < then.length; i++) {
           //var movieRec = recommendations[movieID];
-          graphPRes.elements.nodes.push({
+          const recNode = {
             data: {
               id: movieRec.id,
               name: movieRec.title,
@@ -452,13 +467,15 @@ $(function() {
             },
             position: {
               x: 1000,
-              y: (node_pos),
+              y: 1000,
             }
-          });
-          node_pos += 50
+          }
+          graphPRes.elements.nodes.push(recNode);
+          recNodes[movieRec.id] = recNode;
+
           Object.keys(movieRec.basis).forEach((key) => {
             const basis = movieRec.basis[key];
-            if (!basisList[basis]) {
+            if (!basisNodes[basis]) {
               const basisNode = {
                 data: {
                   id: basis,
@@ -467,12 +484,11 @@ $(function() {
                 },
                 position: {
                   x: 500,
-                  y: basis_pos,
+                  y: 500,
                 }
               }
               graphPRes.elements.nodes.push(basisNode);
-              basis_pos += 100;
-              basisList[basis] = basisNode;
+              basisNodes[basis] = basisNode;
             }
             if (basis == "13156") {
               console.log("second hand lions rec: " + movieRec.title);
@@ -489,15 +505,15 @@ $(function() {
         });
         console.dir(then[0]);
 
-        const numBasis = Object.keys(basisList).length;
+        const numBasis = Object.keys(BasisNodes).length;
         const centerX = 1000;
         const centerY = 1000;
         const diameter1 = 750;
         let bki = 0;
         let degreesPer = 360 / numBasis;
         console.log("Basis pos:");
-        Object.keys(basisList).forEach((bkey) => {
-          const basisNode = basisList[bkey];
+        Object.keys(BasisNodes).forEach((bkey) => {
+          const basisNode = BasisNodes[bkey];
           const angle = degreesPer * bki;
           let temp = angle_to_pos(angle, diameter1);
           let posx = temp.mX + centerX;
@@ -516,8 +532,8 @@ $(function() {
             let ypos = centerY;
             const basisKeys = Object.keys(recommendations[node.data.id].basis);
             basisKeys.forEach((basisKey) => {
-              xpos = xpos + basisList[basisKey].position.x;
-              ypos = ypos + basisList[basisKey].position.y;
+              xpos = xpos + BasisNodes[basisKey].position.x;
+              ypos = ypos + BasisNodes[basisKey].position.y;
             });
             xpos = xpos / (basisKeys.length + 1);
             ypos = ypos / (basisKeys.length + 1);
