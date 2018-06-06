@@ -1,5 +1,5 @@
 html, body {
-  font: 14px fontawesome, helvetica neue, helvetica, liberation sans, nimbus sans, nimbus sans l, arial, sans-serif;
+  font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
   width: 100%;
   height: 100%;
   position: absolute;
@@ -132,7 +132,7 @@ body.calc #loading {
   position: relative;
   right: 0;
   top: 0;
-  background: #000;
+  background: #5E747F;
 }
 
 #info {
@@ -154,7 +154,7 @@ body.calc #loading {
   margin-left: 1em;
   padding: 15px;
   /*background: #bbdbf7;*/
-  background: #000;
+  background: #5E747F;
   border: 1px solid #ccc;
   /* box-shadow: inset 0 0 0 0.25em rgba(187, 219, 247, 0.9); */
   max-height: 100%;
